@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
-import logging
 from lib import helpers
+import logging
 
 import asyncio
 import os
