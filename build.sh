@@ -13,3 +13,4 @@ if [[ `docker compose ls | grep -q ^azusa` ]]; then
 else
     echo "azusa still running :)"
     exit 0
+fi
