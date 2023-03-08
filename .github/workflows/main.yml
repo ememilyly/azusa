@@ -23,6 +23,6 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_DIR }}
             git pull
-            docker compose down
-            docker compose up --build -d --remove-orphans
+            ./build.sh
+
             docker image prune -a -f

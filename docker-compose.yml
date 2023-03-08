@@ -1,5 +1,6 @@
 services:
     azusa:
+        container_name: azusa
         build: .
         volumes:
             - .:/azusa
