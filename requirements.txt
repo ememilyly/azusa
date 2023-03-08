@@ -8,7 +8,7 @@ chardet
 charset-normalizer
 click
 colorama
-discord.py==1.4.2
+discord.py==2.2.2
 frozenlist
 google-api-core
 google-api-python-client
