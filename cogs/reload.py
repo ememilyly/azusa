@@ -6,6 +6,7 @@ class Reload(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    # TODO: this doesn't work anymore lol rip
     @commands.command()
     @commands.is_owner()
     async def reload(self, ctx, *args):
@@ -16,7 +17,7 @@ class Reload(commands.Cog):
             self.bot.config = reload_cfg('bot.cfg')
             self.bot.command_prefix = self.bot.config['bot']['prefix']
         elif len(args) == 1:
-            cog = args[0]
+            cog = args[0].lower()
             if cog == "cfg":
                 self.bot.config = reload_cfg('bot.cfg')
                 self.bot.command_prefix = self.bot.config['bot']['prefix']
@@ -33,7 +34,7 @@ class Reload(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def listcogs(self, ctx):
-        await ctx.send(', '.join(self.bot.cogs.keys()))
+        await ctx.send(', '.join(self.bot.cogs.keys()).lower())
 
     @commands.command()
     @commands.is_owner()

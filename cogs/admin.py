@@ -7,7 +7,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     async def prune(self, ctx, *args):
-        if ctx.author.permissions_in(ctx.channel).manage_messages and args[0].isdigit():
+        if ctx.channel.permissions_for(ctx.author).manage_messages and args[0].isdigit()::
             # smol limit because discord rate limits
             limit = 10
             if limit > int(args[0]): limit = args[0]
