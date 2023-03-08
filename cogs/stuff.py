@@ -9,6 +9,18 @@ _log = logging.getLogger(__name__)
 class stuff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.log = _log
+
+    @commands.command(
+        help="test command",
+        hidden=True,
+    )
+    async def test(
+        self,
+        ctx,
+        testarg: str = commands.parameter(default="uwu", description="test command"),
+    ):
+        self.log.error(testarg)
 
     @commands.command(aliases=("ud",))
     async def urbandict(self, ctx, *args):
@@ -24,5 +36,5 @@ class stuff(commands.Cog):
 
 
 async def setup(bot):
-    _log.info(f"Loading {__name__}")
+    _log.info(f"loading {__name__}")
     await bot.add_cog(stuff(bot))

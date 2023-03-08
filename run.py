@@ -2,7 +2,7 @@
 import discord
 from discord.ext import commands
 import logging
-from lib.helpers import *
+from lib import helpers
 
 import asyncio
 import os
@@ -13,7 +13,7 @@ _log = logging.getLogger(__name__)
 
 async def main():
     async with bot:
-        for ext in available_exts():
+        for ext in helpers.available_exts():
             try:
                 await bot.load_extension(f"cogs.{ext}")
             except commands.ExtensionError:
@@ -24,7 +24,7 @@ async def main():
 
 if __name__ == "__main__":
     if os.path.isfile("bot.cfg"):
-        config = reload_cfg("bot.cfg")
+        config = helpers.reload_cfg("bot.cfg")
     else:
         raise OSError("bot.cfg not found")
 

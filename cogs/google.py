@@ -9,6 +9,7 @@ _log = logging.getLogger(__name__)
 class google(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.log = _log
 
     @commands.command(aliases=("img",))
     async def image(self, ctx, *args):
@@ -34,10 +35,10 @@ class google(commands.Cog):
 
 
 async def setup(bot):
-    _log.info(f"Loading {__name__}")
+    _log.info(f"loading {__name__}")
     if bot.config["google"]["api_key"] and bot.config["google"]["engine_id"]:
         await bot.add_cog(google(bot))
     else:
-        e = "No google api config found, not loading"
+        e = "no google api config found, not loading"
         _log.warning(e)
         raise commands.ExtensionError(e, name=__name__)
