@@ -7,15 +7,15 @@ import os
 import logging
 from configparser import ConfigParser
 
-async def load_extensions(cogdir):
-    for cog in os.listdir(cogdir):
-        if cog.endswith('.py'):
-            name = cog[:-3]
-            await bot.load_extension(f'cogs.{name}')
+async def load_extensions():
+    for f in os.listdir('cogs'):
+        if f.endswith('.py'):
+            cog = f[:-3]
+            await bot.load_extension(f'cogs.{cog}')
 
 async def main():
     async with bot:
-        await load_extensions('cogs')
+        await load_extensions()
         await bot.start(bot.config['bot']['token'])
 
 logging.basicConfig(level=logging.DEBUG)

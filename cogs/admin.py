@@ -1,39 +1,79 @@
 from discord.ext import commands
 from configparser import ConfigParser
 import subprocess
+import os
 
 class admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    @commands.is_owner()
-    async def reload(self, ctx, *args):
-        if not args:
-            for cog in self.bot.cogs.keys():
-                self.bot.reload_extension(f'cogs.{cog.lower()}')
-            await ctx.send(f'{len(self.bot.cogs)} cogs reloaded.')
-            self.bot.config = reload_cfg('bot.cfg')
-            self.bot.command_prefix = self.bot.config['bot']['prefix']
-        elif len(args) == 1:
-            cog = args[0]
-            if cog == "cfg":
-                self.bot.config = reload_cfg('bot.cfg')
-                self.bot.command_prefix = self.bot.config['bot']['prefix']
-                await ctx.send('Config reloaded.')
-            elif cog in self.bot.cogs.keys():
-                await ctx.send(f'Reloading {cog}...')
-                await self.bot.reload_extension(f'cogs.{cog.lower()}')
-            else:
-                await ctx.send(f'{cog} not recognised.')
-
-        else:
-            await ctx.send('Unrecognised arguments, please specify a cog.')
-    
     @commands.command(aliases=('cogs',))
     @commands.is_owner()
     async def listcogs(self, ctx):
-        await ctx.send(', '.join(self.bot.cogs.keys()).lower())
+        loaded_cogs = self.bot.cogs.keys()
+        unloaded_cogs = []
+        for cog in available_cogs():
+            if cog not in loaded_cogs:
+                unloaded_cogs.append(cog[:-3])
+
+        message = 'Loaded cogs:\n`' + \
+            '`, `'.join(sorted(loaded_cogs)) + '`'
+        if unloaded_cogs:
+            message += '\n\nUnloaded cogs:\n`' + \
+                '`, `'.join(sorted(loaded_cogs)) + '`'
+
+        await ctx.send(message)
+
+    @commands.command(aliases=('load',))
+    @commands.is_owner()
+    async def loadcog(self, ctx, *args):
+        if not args:
+            await ctx.send('Please specify which cogs to load.')
+        else:
+            _available_cogs = available_cogs()
+            for cog in args:
+                if cog not in _available_cogs:
+                    await ctx.send(f'Can\'t find `{cog}` :frowning:')
+                elif cog in self.bot.cogs.keys():
+                    await ctx.send(f'`{cog}` is already loaded.')
+                else:
+                    await self.bot.load_extension(f'cogs.{cog}')
+                    await ctx.send(f'Loaded `{cog}` :muscle:')
+
+    @commands.command(aliases=('unload',))
+    @commands.is_owner()
+    async def unloadcog(self, ctx, *args):
+        if not args:
+            await ctx.send('Please specify which cogs to unload.')
+        else:
+            _loaded_cogs = self.bot.cogs.keys()
+            for cog in args:
+                if cog not in _loaded_cogs:
+                    await ctx.send(f'Unknown cog `{cog}` :frowning:')
+                else:
+                    await self.bot.unload_extension(f'cogs.{cog}')
+                    await ctx.send(f'Unloaded `{cog}` :wave:')
+
+    @commands.command(aliases=('reload',))
+    @commands.is_owner()
+    async def reloadcog(self, ctx, *args):
+        if not args:
+            for cog in self.bot.cogs.keys():
+                self.bot.reload_extension(f'cogs.{cog}')
+            await ctx.send(f'{len(self.bot.cogs)} cogs reloaded.')
+            self.bot.config = reload_cfg('bot.cfg')
+            self.bot.command_prefix = self.bot.config['bot']['prefix']
+        else:
+            for cog in args:
+                if cog in ('cfg', 'config'):
+                    self.bot.config = reload_cfg('bot.cfg')
+                    self.bot.command_prefix = self.bot.config['bot']['prefix']
+                    await ctx.send('Reloaded config :slight_smile:')
+                elif cog in self.bot.cogs.keys():
+                    await self.bot.reload_extension(f'cogs.{cog.lower()}')
+                    await ctx.send(f'Reloaded `{cog}` :muscle:')
+                else:
+                    await ctx.send(f'Unknown cog `{cog}` :frowning:')
 
     @commands.command()
     @commands.is_owner()
@@ -56,3 +96,11 @@ def reload_cfg(path):
     config = ConfigParser()
     config.read(path)
     return config
+
+def available_cogs():
+    cogs = []
+    for cog in os.listdir('cogs'):
+        if cog.endswith('.py'):
+            cogs.append(cog[:-3])
+
+    return cogs
