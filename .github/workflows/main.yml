@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Update azusa:
+  Update_azusa:
     runs-on: ubuntu-latest
     steps:
       - name: Update azusa
