@@ -3,13 +3,16 @@ name: azusa cicd
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - '**/README.md'
+      - 'bot.cfg.example'
   workflow_dispatch:
 
 jobs:
-  push:
+  Push:
     runs-on: ubuntu-latest
     steps:
-      - name: push to azusa
+      - name: Update azusa
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
