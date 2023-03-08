@@ -19,6 +19,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          script_stop: true
           script: |
             cd ${{ secrets.PROJECT_DIR }}
             git pull
