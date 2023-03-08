@@ -1,4 +1,4 @@
-name: azusa cicd
+name: Update azusa
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Push:
+  Update azusa:
     runs-on: ubuntu-latest
     steps:
       - name: Update azusa
