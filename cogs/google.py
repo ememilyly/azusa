@@ -11,11 +11,21 @@ class google(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.command(aliases=("img",))
-    async def image(self, ctx, *args):
-        if args:
+    @commands.command(
+        aliases=("img",),
+        help="Find the first image on google"
+    )
+    async def image(
+        self,
+        ctx,
+        *,
+        term: str = commands.parameter(
+            description="What you want to look up"
+        )
+    ):
+        if term:
             search = {
-                "q": " ".join(args),
+                "q": term,
                 "num": 1,
                 "safe": "off",
             }
