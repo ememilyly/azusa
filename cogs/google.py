@@ -1,6 +1,6 @@
 from discord.ext import commands
 import logging
-from configparser import ConfigParser
+
 from google_images_search import GoogleImagesSearch
 
 _log = logging.getLogger(__name__)

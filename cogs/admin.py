@@ -1,7 +1,10 @@
 from discord.ext import commands
+from lib.helpers import *
 import logging
-from configparser import ConfigParser
-import os
+
+
+#from configparser import ConfigParser
+#import os
 
 _log = logging.getLogger(__name__)
 
@@ -109,15 +112,15 @@ async def setup(bot):
 
 # Helpers
 
-def reload_cfg(path):
-    config = ConfigParser()
-    config.read(path)
-    return config
-
-def available_exts():
-    exts = []
-    for ext in os.listdir('cogs'):
-        if ext.endswith('.py'):
-            exts.append(ext[:-3])
-
-    return exts
+#def reload_cfg(path):
+#    config = ConfigParser()
+#    config.read(path)
+#    return config
+#
+#def available_exts():
+#    exts = []
+#    for ext in os.listdir('cogs'):
+#        if ext.endswith('.py'):
+#            exts.append(ext[:-3])
+#
+#    return exts

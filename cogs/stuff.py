@@ -1,8 +1,7 @@
 from discord.ext import commands
 import logging
-from configparser import ConfigParser
+
 from udpy import UrbanClient
-from google_images_search import GoogleImagesSearch
 
 _log = logging.getLogger(__name__)
 

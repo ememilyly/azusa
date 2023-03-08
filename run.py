@@ -2,33 +2,28 @@
 import discord
 from discord.ext import commands
 
-import asyncio
-import os
 import logging
-from configparser import ConfigParser
-
 discord.utils.setup_logging(level=logging.INFO)
 _log = logging.getLogger(__name__)
 
-async def load_extensions():
-    for f in os.listdir('cogs'):
-        if f.endswith('.py'):
-            cog = f[:-3]
-            try:
-                await bot.load_extension(f'cogs.{cog}')
-            except Exception as e:
-                continue
+from lib.helpers import *
+import asyncio
+import os
 
 async def main():
     async with bot:
-        await load_extensions()
+        for ext in available_exts():
+            try:
+                await bot.load_extension(f'cogs.{ext}')
+            except Exception as e:
+                continue
+
         await bot.start(bot.config['bot']['token'])
 
 
 if __name__ == '__main__':
     if os.path.isfile('bot.cfg'):
-        config = ConfigParser()
-        config.read('bot.cfg')
+        config = reload_cfg('bot.cfg')
     else:
         raise OSError("bot.cfg not found")
 
