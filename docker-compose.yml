@@ -1,0 +1,6 @@
+services:
+    azusa:
+        build: .
+        volumes:
+            - .:/azusa
+        command: python3 run.py
