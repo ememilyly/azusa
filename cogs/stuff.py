@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from udpy import UrbanClient
 from google_images_search import GoogleImagesSearch
 
-class Stuff(commands.Cog):
+class stuff(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -38,5 +38,9 @@ class Stuff(commands.Cog):
             gis.search(search_params=search)
             await ctx.send(gis.results()[0]._url)
 
+    @commands.command()
+    async def test(self, ctx, *args):
+        await ctx.send('hii')
+
 async def setup(bot):
-    await bot.add_cog(Stuff(bot))
+    await bot.add_cog(stuff(bot))

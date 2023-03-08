@@ -2,7 +2,7 @@ from discord.ext import commands
 from configparser import ConfigParser
 import subprocess
 
-class Reload(commands.Cog):
+class reload(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -17,21 +17,21 @@ class Reload(commands.Cog):
             self.bot.config = reload_cfg('bot.cfg')
             self.bot.command_prefix = self.bot.config['bot']['prefix']
         elif len(args) == 1:
-            cog = args[0].lower()
+            cog = args[0]
             if cog == "cfg":
                 self.bot.config = reload_cfg('bot.cfg')
                 self.bot.command_prefix = self.bot.config['bot']['prefix']
-                await ctx.send('Config reloaded')
+                await ctx.send('Config reloaded.')
             elif cog in self.bot.cogs.keys():
                 await ctx.send(f'Reloading {cog}...')
-                self.bot.reload_extension(f'cogs.{cog.lower()}')
+                await self.bot.reload_extension(f'cogs.{cog.lower()}')
             else:
                 await ctx.send(f'{cog} not recognised.')
 
         else:
             await ctx.send('Unrecognised arguments, please specify a cog.')
     
-    @commands.command()
+    @commands.command(aliases=('cogs',))
     @commands.is_owner()
     async def listcogs(self, ctx):
         await ctx.send(', '.join(self.bot.cogs.keys()).lower())
@@ -49,7 +49,7 @@ class Reload(commands.Cog):
                 await ctx.send('```' + res + '```')
 
 async def setup(bot):
-    await bot.add_cog(Reload(bot))
+    await bot.add_cog(reload(bot))
 
 # Helpers
 
