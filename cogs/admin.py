@@ -14,9 +14,6 @@ class Admin(commands.Cog):
             async for message in ctx.channel.history(limit=int(args[0])+1):
                 await message.delete()
 
-        if ctx.author.id == 651651128521523210:
-            await ctx.send('F O R F R E E')
-            sleep(1) 
-
-def setup(bot):
-    bot.add_cog(Admin(bot))
+async def setup(bot):
+    print('loading admin')
+    await bot.add_cog(Admin(bot))

@@ -47,8 +47,8 @@ class Reload(commands.Cog):
                 res = subprocess.check_output(['git', 'status']).decode('utf-8')
                 await ctx.send('```' + res + '```')
 
-def setup(bot):
-    bot.add_cog(Reload(bot))
+async def setup(bot):
+    await bot.add_cog(Reload(bot))
 
 # Helpers
 
