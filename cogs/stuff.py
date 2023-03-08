@@ -38,9 +38,5 @@ class stuff(commands.Cog):
             gis.search(search_params=search)
             await ctx.send(gis.results()[0]._url)
 
-    @commands.command()
-    async def test(self, ctx, *args):
-        await ctx.send('hii')
-
 async def setup(bot):
     await bot.add_cog(stuff(bot))
