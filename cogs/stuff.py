@@ -22,27 +22,5 @@ class stuff(commands.Cog):
             else:
                 await ctx.send(f'No definition found for {word}')
 
-    @commands.command(aliases=('img',))
-    async def image(self, ctx, *args):
-        if args:
-            search = {
-                'q': ' '.join(args),
-                'num': 1,
-                'safe': 'off',
-                }
-
-            if self.bot.config['google']['api_key'] and self.bot.config['google']['engine_id']:
-                key = self.bot.config['google']['api_key']
-                cx = self.bot.config['google']['engine_id']
-            else:
-                return
-
-            gis = GoogleImagesSearch(key, cx)
-            gis.search(search_params=search)
-            await ctx.send(gis.results()[0]._url)
-
 async def setup(bot):
-    if bot.config['google']['api_key'] and bot.config['google']['engine_id']:
-        await bot.add_cog(stuff(bot))
-    else:
-        _log.warning('No google api config found, not loading')
+    await bot.add_cog(stuff(bot))

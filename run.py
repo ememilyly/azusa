@@ -7,18 +7,23 @@ import os
 import logging
 from configparser import ConfigParser
 
+discord.utils.setup_logging(level=logging.INFO)
+_log = logging.getLogger(__name__)
+
 async def load_extensions():
     for f in os.listdir('cogs'):
         if f.endswith('.py'):
             cog = f[:-3]
-            await bot.load_extension(f'cogs.{cog}')
+            try:
+                await bot.load_extension(f'cogs.{cog}')
+            except Exception as e:
+                continue
 
 async def main():
     async with bot:
         await load_extensions()
         await bot.start(bot.config['bot']['token'])
 
-discord.utils.setup_logging(level=logging.INFO)
 
 if __name__ == '__main__':
     if os.path.isfile('bot.cfg'):
