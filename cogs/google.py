@@ -30,6 +30,7 @@ class google(commands.Cog):
             await ctx.send(gis.results()[0]._url)
 
 async def setup(bot):
+    _log.info(f'Loading {__name__}')
     if bot.config['google']['api_key'] and bot.config['google']['engine_id']:
         await bot.add_cog(google(bot))
     else:

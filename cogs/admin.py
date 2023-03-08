@@ -41,8 +41,11 @@ class admin(commands.Cog):
                     await ctx.send(f'`{cog}` is already loaded.')
                 else:
                     try:
+                        _log.info(f'Loading {cog}...')
                         await self.bot.load_extension(f'cogs.{cog}')
                     except Exception as e:
+                        _log.error(f'Failed to load {cog}:')
+                        _log.error(e)
                         await ctx.send(f'Failed to load {cog} :sob:\n```{e}```')
                     else:
                         await ctx.send(f'Loaded `{cog}` :muscle:')
@@ -97,6 +100,7 @@ class admin(commands.Cog):
                 await ctx.send('```' + res + '```')
 
 async def setup(bot):
+    _log.info(f'Loading {__name__}')
     await bot.add_cog(admin(bot))
 
 # Helpers

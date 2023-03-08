@@ -18,4 +18,5 @@ class moderation(commands.Cog):
                 await message.delete()
 
 async def setup(bot):
+    _log.info(f'Loading {__name__}')
     await bot.add_cog(moderation(bot))

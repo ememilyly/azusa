@@ -23,4 +23,5 @@ class stuff(commands.Cog):
                 await ctx.send(f'No definition found for {word}')
 
 async def setup(bot):
+    _log.info(f'Loading {__name__}')
     await bot.add_cog(stuff(bot))
