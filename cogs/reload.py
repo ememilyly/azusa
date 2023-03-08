@@ -6,7 +6,6 @@ class reload(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # TODO: this doesn't work anymore lol rip
     @commands.command()
     @commands.is_owner()
     async def reload(self, ctx, *args):
