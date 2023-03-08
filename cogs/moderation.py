@@ -1,5 +1,8 @@
 from discord.ext import commands
+import logging
 from time import sleep
+
+_log = logging.getLogger(__name__)
 
 class moderation(commands.Cog):
     def __init__(self, bot):

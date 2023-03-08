@@ -18,7 +18,7 @@ async def main():
         await load_extensions()
         await bot.start(bot.config['bot']['token'])
 
-logging.basicConfig(level=logging.DEBUG)
+discord.utils.setup_logging(level=logging.INFO)
 
 if __name__ == '__main__':
     if os.path.isfile('bot.cfg'):

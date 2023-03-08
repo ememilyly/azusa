@@ -1,7 +1,10 @@
 from discord.ext import commands
+import logging
 from configparser import ConfigParser
 from udpy import UrbanClient
 from google_images_search import GoogleImagesSearch
+
+_log = logging.getLogger(__name__)
 
 class stuff(commands.Cog):
     def __init__(self, bot):
@@ -39,4 +42,7 @@ class stuff(commands.Cog):
             await ctx.send(gis.results()[0]._url)
 
 async def setup(bot):
-    await bot.add_cog(stuff(bot))
+    if bot.config['google']['api_key'] and bot.config['google']['engine_id']:
+        await bot.add_cog(stuff(bot))
+    else:
+        _log.warning('No google api config found, not loading')

@@ -1,7 +1,10 @@
 from discord.ext import commands
+import logging
 from configparser import ConfigParser
 import subprocess
 import os
+
+_log = logging.getLogger(__name__)
 
 class admin(commands.Cog):
     def __init__(self, bot):
@@ -14,13 +17,13 @@ class admin(commands.Cog):
         unloaded_cogs = []
         for cog in available_cogs():
             if cog not in loaded_cogs:
-                unloaded_cogs.append(cog[:-3])
+                unloaded_cogs.append(cog)
 
         message = 'Loaded cogs:\n`' + \
             '`, `'.join(sorted(loaded_cogs)) + '`'
         if unloaded_cogs:
             message += '\n\nUnloaded cogs:\n`' + \
-                '`, `'.join(sorted(loaded_cogs)) + '`'
+                '`, `'.join(sorted(unloaded_cogs)) + '`'
 
         await ctx.send(message)
 
@@ -37,8 +40,12 @@ class admin(commands.Cog):
                 elif cog in self.bot.cogs.keys():
                     await ctx.send(f'`{cog}` is already loaded.')
                 else:
-                    await self.bot.load_extension(f'cogs.{cog}')
-                    await ctx.send(f'Loaded `{cog}` :muscle:')
+                    try:
+                        await self.bot.load_extension(f'cogs.{cog}')
+                    except Exception as e:
+                        await ctx.send(f'Failed to load {cog} :sob:\n```{e}```')
+                    else:
+                        await ctx.send(f'Loaded `{cog}` :muscle:')
 
     @commands.command(aliases=('unload',))
     @commands.is_owner()
@@ -58,11 +65,13 @@ class admin(commands.Cog):
     @commands.is_owner()
     async def reloadcog(self, ctx, *args):
         if not args:
-            for cog in self.bot.cogs.keys():
-                self.bot.reload_extension(f'cogs.{cog}')
-            await ctx.send(f'{len(self.bot.cogs)} cogs reloaded.')
+            cogs = sorted(self.bot.cogs.keys())
+            for cog in cogs:
+                await self.bot.reload_extension(f'cogs.{cog}')
+            await ctx.send(f'{len(self.bot.cogs)} cogs reloaded: `{"`, `".join(cogs)}`')
             self.bot.config = reload_cfg('bot.cfg')
             self.bot.command_prefix = self.bot.config['bot']['prefix']
+            await ctx.send('Reloaded config :muscle:')
         else:
             for cog in args:
                 if cog in ('cfg', 'config'):
