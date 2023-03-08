@@ -18,21 +18,31 @@ class stuff(commands.Cog):
     async def test(
         self,
         ctx,
+        *,
         testarg: str = commands.parameter(default="uwu", description="test command"),
     ):
         self.log.error(testarg)
 
-    @commands.command(aliases=("ud",))
-    async def urbandict(self, ctx, *args):
-        if args:
-            word = " ".join(args)
+    @commands.command(
+        aliases=("ud",),
+        help="Look up something on Urban Dictionary"
+    )
+    async def urbandict(
+        self,
+        ctx,
+        *,
+        term: str = commands.parameter(
+            description="What you want to look up"
+        )
+    ):
+        if term:
             client = UrbanClient()
-            defs = client.get_definition(word)
+            defs = client.get_definition(term)
             if defs:
-                m = defs[0].definition + "\ne.g.: " + defs[0].example
+                m = defs[0].definition + "\n```" + defs[0].example + "```"
                 await ctx.send(m.replace("[", "").replace("]", ""))
             else:
-                await ctx.send(f"No definition found for {word}")
+                await ctx.send(f"No definition found for {term}")
 
 
 async def setup(bot):
