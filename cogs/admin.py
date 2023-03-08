@@ -1,7 +1,6 @@
 from discord.ext import commands
 import logging
 from configparser import ConfigParser
-import subprocess
 import os
 
 _log = logging.getLogger(__name__)
@@ -10,94 +9,99 @@ class admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=('cogs',))
-    @commands.is_owner()
-    async def listcogs(self, ctx):
-        loaded_cogs = self.bot.cogs.keys()
-        unloaded_cogs = []
-        for cog in available_cogs():
-            if cog not in loaded_cogs:
-                unloaded_cogs.append(cog)
+    @property
+    def _loaded_extensions(self):
+        # ['cogs.example'] -> ['example']
+        # maybe will just use what discord.py gives at some point but for now
+        # this makes life easier, all my stuff is in one folder
+        return [ext.split('.')[1] for ext in self.bot.extensions.keys()]
 
-        message = 'Loaded cogs:\n`' + \
-            '`, `'.join(sorted(loaded_cogs)) + '`'
-        if unloaded_cogs:
-            message += '\n\nUnloaded cogs:\n`' + \
-                '`, `'.join(sorted(unloaded_cogs)) + '`'
+    @commands.command(aliases=(
+        'listextensions',
+        'exts',
+        'listcogs',
+        'cogs',
+        ))
+    @commands.is_owner()
+    async def listexts(self, ctx):
+        loaded_exts = self._loaded_extensions
+        unloaded_exts = []
+        for ext in available_exts():
+            if ext not in loaded_exts:
+                unloaded_exts.append(ext)
+
+        message = 'Loaded extensions:\n`' + \
+            '`, `'.join(sorted(loaded_exts)) + '`'
+        if unloaded_exts:
+            message += '\n\nUnloaded extensions:\n`' + \
+                '`, `'.join(sorted(unloaded_exts)) + '`'
 
         await ctx.send(message)
 
     @commands.command(aliases=('load',))
     @commands.is_owner()
-    async def loadcog(self, ctx, *args):
+    async def loadext(self, ctx, *args):
         if not args:
-            await ctx.send('Please specify which cogs to load.')
+            await ctx.send('Please specify which extensions to load.')
         else:
-            _available_cogs = available_cogs()
-            for cog in args:
-                if cog not in _available_cogs:
-                    await ctx.send(f'Can\'t find `{cog}` :frowning:')
-                elif cog in self.bot.cogs.keys():
-                    await ctx.send(f'`{cog}` is already loaded.')
+            _available_exts = available_exts()
+            for ext in args:
+                if ext not in _available_exts:
+                    await ctx.send(f'Can\'t find `{ext}` :frowning:')
+                elif ext in self._loaded_extensions:
+                    await ctx.send(f'`{ext}` is already loaded.')
                 else:
                     try:
-                        _log.info(f'Loading {cog}...')
-                        await self.bot.load_extension(f'cogs.{cog}')
+                        await self.bot.load_extension(f'cogs.{ext}')
                     except Exception as e:
-                        _log.error(f'Failed to load {cog}:')
+                        _log.error(f'Failed to load {ext}:')
                         _log.error(e)
-                        await ctx.send(f'Failed to load {cog} :sob:\n```{e}```')
+                        await ctx.send(f'Failed to load {ext} :sob:\n```{e}```')
                     else:
-                        await ctx.send(f'Loaded `{cog}` :muscle:')
+                        await ctx.send(f'Loaded `{ext}` :muscle:')
 
     @commands.command(aliases=('unload',))
     @commands.is_owner()
-    async def unloadcog(self, ctx, *args):
+    async def unloadext(self, ctx, *args):
         if not args:
-            await ctx.send('Please specify which cogs to unload.')
+            await ctx.send('Please specify which extensions to unload.')
         else:
-            _loaded_cogs = self.bot.cogs.keys()
-            for cog in args:
-                if cog not in _loaded_cogs:
-                    await ctx.send(f'Unknown cog `{cog}` :frowning:')
+            _loaded_exts = self._loaded_extensions
+            for ext in args:
+                if ext not in _loaded_exts:
+                    await ctx.send(f'Unknown extension `{ext}` :frowning:')
                 else:
-                    await self.bot.unload_extension(f'cogs.{cog}')
-                    await ctx.send(f'Unloaded `{cog}` :wave:')
+                    await self.bot.unload_extension(f'cogs.{ext}')
+                    await ctx.send(f'Unloaded `{ext}` :wave:')
 
     @commands.command(aliases=('reload',))
     @commands.is_owner()
     async def reloadcog(self, ctx, *args):
         if not args:
-            cogs = sorted(self.bot.cogs.keys())
-            for cog in cogs:
-                await self.bot.reload_extension(f'cogs.{cog}')
-            await ctx.send(f'{len(self.bot.cogs)} cogs reloaded: `{"`, `".join(cogs)}`')
+            exts = sorted(self._loaded_extensions)
+            for ext in exts:
+                await self.bot.reload_extension(f'cogs.{ext}')
+            await ctx.send(f'{len(self.bot.extensions)} extensions reloaded:' \
+                    f'`{"`, `".join(exts)}`')
             self.bot.config = reload_cfg('bot.cfg')
             self.bot.command_prefix = self.bot.config['bot']['prefix']
             await ctx.send('Reloaded config :muscle:')
         else:
-            for cog in args:
-                if cog in ('cfg', 'config'):
+            for ext in args:
+                if ext in ('cfg', 'config'):
                     self.bot.config = reload_cfg('bot.cfg')
                     self.bot.command_prefix = self.bot.config['bot']['prefix']
                     await ctx.send('Reloaded config :slight_smile:')
-                elif cog in self.bot.cogs.keys():
-                    await self.bot.reload_extension(f'cogs.{cog.lower()}')
-                    await ctx.send(f'Reloaded `{cog}` :muscle:')
+                elif ext in self.bot.cogs.keys():
+                    await self.bot.reload_extension(f'cogs.{ext.lower()}')
+                    await ctx.send(f'Reloaded `{ext}` :muscle:')
                 else:
-                    await ctx.send(f'Unknown cog `{cog}` :frowning:')
+                    await ctx.send(f'Unknown extension `{ext}` :frowning:')
 
     @commands.command()
     @commands.is_owner()
-    async def git(self, ctx, *args):
-        if len(args) == 1:
-            if args[0] == 'pull':
-                res = subprocess.check_output(['git', 'pull']).decode('utf-8')
-                await ctx.send('```' + res + '```')
-            elif args[0] == 'status':
-                subprocess.run(['git', 'remote', 'update'])
-                res = subprocess.check_output(['git', 'status']).decode('utf-8')
-                await ctx.send('```' + res + '```')
+    async def log(self, ctx, *args):
+        await ctx.send('```'+str(self.bot.cogs.keys())+'```')
 
 async def setup(bot):
     _log.info(f'Loading {__name__}')
@@ -110,10 +114,10 @@ def reload_cfg(path):
     config.read(path)
     return config
 
-def available_cogs():
-    cogs = []
-    for cog in os.listdir('cogs'):
-        if cog.endswith('.py'):
-            cogs.append(cog[:-3])
+def available_exts():
+    exts = []
+    for ext in os.listdir('cogs'):
+        if ext.endswith('.py'):
+            exts.append(ext[:-3])
 
-    return cogs
+    return exts
