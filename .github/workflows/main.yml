@@ -1,0 +1,24 @@
+name: azusa cicd
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: push to azusa
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          script: |
+            cd ${{ secrets.PROJECT_DIR }}
+            git pull
+            docker compose down
+            docker compose up --build -d --remove-orphans
+            docker image prune -a -f
