@@ -67,7 +67,8 @@ class ai(commands.Cog):
             await ctx.send(
                 file=discord.File(
                     io.BytesIO(r.content),
-                    filename="image.png"
+                    filename="image.png",
+                    spoiler=True
                 )
             )
 
