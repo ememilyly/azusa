@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib import helpers
+from lib import invokers
 import logging
 
 _log = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ class moderation(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.before_invoke(helpers.log_command)
+    @commands.before_invoke(invokers.log_command)
     @commands.command(
         help="Prune previous chat messages in the current channel",
     )

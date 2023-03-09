@@ -1,16 +1,11 @@
-import os
 import logging
 from configparser import ConfigParser
+import os
 
 _log = logging.getLogger(__name__)
 
 
-async def log_command(instance, ctx):
-    cmd = ctx.message.content.split(' ')
-    instance.log.info(f'AUTHOR:{ctx.author.id} CMD:{cmd}')
-
-
-def available_exts():
+def available_exts() -> list:
     exts = []
     for ext in os.listdir("cogs"):
         if ext.endswith(".py"):
@@ -19,7 +14,7 @@ def available_exts():
     return exts
 
 
-def reload_cfg(path):
+def reload_cfg(path) -> ConfigParser:
     config = ConfigParser()
     config.read(path)
     return config
