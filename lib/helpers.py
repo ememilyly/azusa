@@ -18,3 +18,12 @@ def reload_cfg(path) -> ConfigParser:
     config = ConfigParser()
     config.read(path)
     return config
+
+
+def get_object_from_mention(ctx, mention):
+    mentioned_id = int(mention[2:][:-1])
+    if mention[1] == "@":
+        return ctx.guild.get_member(mentioned_id)
+    elif mention[1] == "#":
+        return ctx.guild.get_channel_or_thread(mentioned_id)
+        pass

@@ -1,6 +1,9 @@
 from discord.ext import commands
+import discord
+from lib import helpers
 import logging
 
+import re
 import requests
 # import openai
 
@@ -13,22 +16,31 @@ class ai(commands.Cog):
         self.log = _log
 
     @commands.command(
+        aliases=("t2i",),
         help="Generate images through DeepAI text2img",
-        hidden=True
     )
-    async def text2img(
-        self,
-        ctx,
-        *,
-        prompt: str = commands.parameter(
-            description="Prompt for DeepAI to generate with"
-        )
-    ):
+    async def text2img(self, ctx, *prompt):
+        # Convert embedded member/channel names to text
+        p = []
+        for word in prompt:
+            mention_regex = '^<(@|#)\\d*>$'
+            # e.g. <@141641110090022914>
+            if re.match(mention_regex, word):
+                obj = helpers.get_object_from_mention(ctx, word)
+                if isinstance(obj, discord.Member):
+                    word = obj.nick
+                else:
+                    word = obj.name
+            p.append(word)
+
+        prompt = ' '.join(p)
+        self.log.info(f"generating image prompt: {prompt}")
         r = requests.post(
             "https://api.deepai.org/api/text2img",
             data={"text": prompt, "grid_size": "1"},
             headers={'api-key': self.bot.config["ai"]["deepai_api_key"]}
         )
+        self.log.info(r.json())
         await ctx.send(r.json()["output_url"])
 
 
