@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
-from lib import helpers
+from lib import azusa, helpers
 import logging
 
 import asyncio
@@ -13,7 +13,7 @@ _log = logging.getLogger(__name__)
 
 async def main():
     async with bot:
-        for ext in helpers.available_exts():
+        for ext in bot.available_exts:
             try:
                 await bot.load_extension(f"cogs.{ext}")
             except commands.ExtensionError:
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     # TODO: intents??
     # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Bot.intents
-    bot = commands.Bot(config["bot"]["prefix"], intents=discord.Intents.all())
+    bot = azusa.Azusa(config["bot"]["prefix"], intents=discord.Intents.all())
     bot.owner_id = int(config["bot"]["ownerid"])
 
     if config["ai"]["openai_error_messages"]:

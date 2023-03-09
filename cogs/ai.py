@@ -13,14 +13,16 @@ class ai(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if f"<@{self.bot.user.id}>" in message.content or (
-            message.type == discord.MessageType.reply
-            and message.reference.cached_message.author.id == self.bot.user.id
-        ):
-            # don't reply to commands unless we want to (TODO)
-            if message.content.startswith(self.bot.command_prefix):
+        # don't reply to commands unless we want to
+        if message.content.startswith(self.bot.command_prefix):
+            if message.content.split(' ')[0] not in self.bot.commands_and_aliases:
+                # await message.reply("dumbass")
                 pass
-            else:
+        else:
+            if f"<@{self.bot.user.id}>" in message.content or (
+                message.type == discord.MessageType.reply
+                and message.reference.cached_message.author.id == self.bot.user.id
+            ):
                 async with message.channel.typing():
                     await message.reply(helpers.generate_openai_chat(message.clean_content))
 

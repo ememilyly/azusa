@@ -2,6 +2,7 @@
 token=token
 prefix=!
 ownerid=012345678901234567
+ext_dir=cogs
 
 [google]
 api_key=

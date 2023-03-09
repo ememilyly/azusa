@@ -33,7 +33,7 @@ class admin(commands.Cog):
     async def listexts(self, ctx):
         loaded_exts = self._loaded_extensions
         unloaded_exts = []
-        for ext in helpers.available_exts():
+        for ext in self.bot.available_exts:
             if ext not in loaded_exts:
                 unloaded_exts.append(ext)
 
@@ -68,7 +68,7 @@ class admin(commands.Cog):
         )
     ):
         if exts:
-            _available_exts = helpers.available_exts()
+            _available_exts = self.bot.available_exts
             for ext in exts.split(' '):
                 if ext not in _available_exts:
                     await ctx.reply(f"Can't find `{ext}` :frowning:")
