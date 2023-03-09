@@ -35,16 +35,17 @@ class ai(commands.Cog):
 
         prompt = ' '.join(p)
         self.log.info(f"generating image prompt: {prompt}")
-        r = requests.post(
-            "https://api.deepai.org/api/text2img",
-            data={"text": prompt, "grid_size": "1"},
-            headers={'api-key': self.bot.config["ai"]["deepai_api_key"]}
-        )
-        self.log.info(r.json())
-        if "err" in r.json():
-            await ctx.send(r.json()["err"])
-        elif "output_url" in r.json():
-            await ctx.send(r.json()["output_url"])
+        async with ctx.typing():
+            r = requests.post(
+                "https://api.deepai.org/api/text2img",
+                data={"text": prompt, "grid_size": "1"},
+                headers={'api-key': self.bot.config["ai"]["deepai_api_key"]}
+            )
+            self.log.info(r.json())
+            if "err" in r.json():
+                await ctx.send(r.json()["err"])
+            elif "output_url" in r.json():
+                await ctx.send(r.json()["output_url"])
 
 
 async def setup(bot):
