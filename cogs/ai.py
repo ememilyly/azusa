@@ -41,7 +41,10 @@ class ai(commands.Cog):
             headers={'api-key': self.bot.config["ai"]["deepai_api_key"]}
         )
         self.log.info(r.json())
-        await ctx.send(r.json()["output_url"])
+        if "err" in r.json():
+            await ctx.send(r.json()["err"])
+        elif "output_url" in r.json():
+            await ctx.send(r.json()["output_url"])
 
 
 async def setup(bot):
