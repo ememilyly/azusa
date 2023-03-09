@@ -75,9 +75,9 @@ class ai(commands.Cog):
 
 async def setup(bot):
     _log.info(f"loading {__name__}")
-    if bot.config["ai"]["deepai_api_key"]:
+    if bot.config["ai"]["dezgo_api_key"]:
         await bot.add_cog(ai(bot))
     else:
-        e = "no DeepAI api key found, not loading"
+        e = "no dezgo api key found, not loading"
         _log.warning(e)
         raise commands.ExtensionError(e, name=__name__)

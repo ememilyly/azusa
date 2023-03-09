@@ -8,6 +8,7 @@ sleep 5
 
 if docker compose ls | grep -q ^azusa; then
     echo "azusa still running :)"
+    docker compose logs
     exit 0
 else
     echo "azusa isn't running anymore :("
