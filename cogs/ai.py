@@ -34,9 +34,12 @@ class ai(commands.Cog):
         if prompt:
             self.log.info(f"generating image prompt: {prompt}")
             async with ctx.typing():
-                image = helpers.generate_dezgo_image(
-                    prompt, self.bot.config["ai"]["dezgo_api_key"]
-                )
+                try:
+                    image = helpers.generate_dezgo_image(prompt)
+                except Exception as e:
+                    self.log.error(e)
+                    await ctx.reply('```' + str(e) + '```')
+                    return
                 await ctx.send(
                     file=discord.File(image, filename="image.png", spoiler=True)
                 )
