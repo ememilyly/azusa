@@ -9,3 +9,6 @@ engine_id=
 
 [ai]
 dezgo_api_key=
+openai_api_key=
+openai_error_messages=0
+personality_prompt=

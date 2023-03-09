@@ -13,11 +13,16 @@ class ai(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if f"<@{self.bot.user.id}>" in message.content:
-            async with message.channel.typing():
-                await message.reply(helpers.generate_openai_chat(
-                    message.clean_content
-                ))
+        if f"<@{self.bot.user.id}>" in message.content or (
+            message.type == discord.MessageType.reply
+            and message.reference.cached_message.author.id == self.bot.user.id
+        ):
+            # don't reply to commands unless we want to (TODO)
+            if message.content.startswith(self.bot.command_prefix):
+                pass
+            else:
+                async with message.channel.typing():
+                    await message.reply(helpers.generate_openai_chat(message.clean_content))
 
     @commands.command(
         aliases=("t2i",),
@@ -27,8 +32,12 @@ class ai(commands.Cog):
         if prompt:
             self.log.info(f"generating image prompt: {prompt}")
             async with ctx.typing():
-                image = helpers.generate_dezgo_image(prompt, self.bot.config["ai"]["dezgo_api_key"])
-                await ctx.send(file=discord.File(image, filename="image.png", spoiler=True))
+                image = helpers.generate_dezgo_image(
+                    prompt, self.bot.config["ai"]["dezgo_api_key"]
+                )
+                await ctx.send(
+                    file=discord.File(image, filename="image.png", spoiler=True)
+                )
         else:
             prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and they didn't tell you"
 
@@ -39,7 +48,11 @@ class ai(commands.Cog):
     async def chat(self, ctx, *args):
         async with ctx.typing():
             if args:
-                await ctx.send(helpers.generate_openai_chat(' '.join(args),))
+                await ctx.send(
+                    helpers.generate_openai_chat(
+                        " ".join(args),
+                    )
+                )
             else:
                 await ctx.send(helpers.generate_rude_response_missing_arg(ctx))
 

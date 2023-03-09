@@ -64,7 +64,7 @@ def generate_openai_chat(
     data = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "your name is azusa and you're a moody and very rude teenage girl chat bot who never says sorry and calls people bitch a lot."},
+            {"role": "system", "content": _config["ai"]["personality_prompt"]},
             {"role": "user", "content": prompt}
         ]
     }
