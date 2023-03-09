@@ -6,6 +6,7 @@ import logging
 import re
 import requests
 import io
+
 # import openai
 
 _log = logging.getLogger(__name__)
@@ -18,14 +19,14 @@ class ai(commands.Cog):
 
     @commands.command(
         aliases=("t2i",),
-        help="Generate images through DeepAI text2img",
+        help="Generate images through dezgo text2img",
     )
     async def text2img(self, ctx, *prompt):
-        # Convert embedded member/channel names to text
+        # Convert member/channel mentions to text
         p = []
         for word in prompt:
-            mention_regex = '^<(@|#)\\d*>$'
-            # e.g. <@141641110090022914>
+            mention_regex = "^<(@|#)\\d*>$"
+            # e.g. <@111222333444555666>
             if re.match(mention_regex, word):
                 obj = helpers.get_object_from_mention(ctx, word)
                 if isinstance(obj, discord.Member):
@@ -37,40 +38,15 @@ class ai(commands.Cog):
                     word = obj.name
             p.append(word)
 
-        prompt = ' '.join(p)
+        prompt = " ".join(p)
         self.log.info(f"generating image prompt: {prompt}")
-
-        # dezgo
-        url = "https://dezgo.p.rapidapi.com/text2image"
-        payload = {
-            "prompt": prompt,
-            "guidance": 7,
-            "steps": 30,
-            "sampler": "euler_a",
-            "upscale": 1,
-            "negative_prompt": "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, blurry, bad anatomy, blurred, watermark, grainy, signature, cut off, draft",
-            "model": "epic_diffusion_1_1"
-        }
-        headers = {
-            "content-type": "application/x-www-form-urlencoded",
-            "X-RapidAPI-Key": self.bot.config["ai"]["dezgo_api_key"],
-            "X-RapidAPI-Host": "dezgo.p.rapidapi.com"
-        }
-
         async with ctx.typing():
-            r = requests.post(
-                url,
-                data=payload,
-                headers=headers
-            )
+            image = generate_dezgo_image(prompt, self.bot.config["ai"]["dezgo_api_key"])
+            await ctx.send(file=discord.File(image, filename="image.png", spoiler=True))
 
-            await ctx.send(
-                file=discord.File(
-                    io.BytesIO(r.content),
-                    filename="image.png",
-                    spoiler=True
-                )
-            )
+    @commands.command()
+    async def text(self, ctx, *args):
+        pass
 
 
 async def setup(bot):
@@ -81,3 +57,30 @@ async def setup(bot):
         e = "no dezgo api key found, not loading"
         _log.warning(e)
         raise commands.ExtensionError(e, name=__name__)
+
+
+# Local helpers
+
+
+def generate_dezgo_image(
+    prompt: str, key: str, model: str = "epic_diffusion_1_1"
+) -> io.BytesIO:
+    url = "https://dezgo.p.rapidapi.com/text2image"
+    payload = {
+        "prompt": prompt,
+        "guidance": 7,
+        "steps": 30,
+        "sampler": "euler_a",
+        "upscale": 1,
+        # default given by dezgo /shrug linter fuming rn
+        "negative_prompt": "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, blurry, bad anatomy, blurred, watermark, grainy, signature, cut off, draft",
+        "model": model,
+    }
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "X-RapidAPI-Key": key,
+        "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
+    }
+    r = requests.post(url, data=payload, headers=headers)
+
+    return io.BytesIO(r.content)
