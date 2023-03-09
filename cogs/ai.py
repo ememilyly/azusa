@@ -3,11 +3,8 @@ import discord
 from lib import helpers
 import logging
 
-import re
 import requests
 import io
-
-# import openai
 
 _log = logging.getLogger(__name__)
 
@@ -17,36 +14,43 @@ class ai(commands.Cog):
         self.bot = bot
         self.log = _log
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if f"<@{self.bot.user.id}>" in message.content:
+            # prompt = helpers.replace_mentions_with_names(message.context, message.content)
+            self.log.info(message.clean_content)
+            await message.reply(helpers.generate_openai_chat(
+                message.clean_content,
+                self.bot.config["ai"]["openai_api_key"]
+            ))
+
     @commands.command(
         aliases=("t2i",),
         help="Generate images through dezgo text2img",
     )
     async def text2img(self, ctx, *prompt):
         # Convert member/channel mentions to text
-        p = []
-        for word in prompt:
-            mention_regex = "^<(@|#)\\d*>$"
-            # e.g. <@111222333444555666>
-            if re.match(mention_regex, word):
-                obj = helpers.get_object_from_mention(ctx, word)
-                if isinstance(obj, discord.Member):
-                    if obj.nick:
-                        word = obj.nick
-                    else:
-                        word = obj.name
-                else:
-                    word = obj.name
-            p.append(word)
-
-        prompt = " ".join(p)
+        prompt = helpers.replace_mentions_with_names(ctx, ' '.join(prompt))
         self.log.info(f"generating image prompt: {prompt}")
         async with ctx.typing():
             image = generate_dezgo_image(prompt, self.bot.config["ai"]["dezgo_api_key"])
             await ctx.send(file=discord.File(image, filename="image.png", spoiler=True))
 
     @commands.command()
-    async def text(self, ctx, *args):
-        pass
+    async def chat(self, ctx, *args):
+        async with ctx.typing():
+            if args:
+                await ctx.send(helpers.generate_openai_chat(
+                    ' '.join(args),
+                    self.bot.config["ai"]["openai_api_key"]
+                ))
+            else:
+                victim = ctx.author.name
+                if ctx.author.nick:
+                    victim = ctx.author.nick
+                await ctx.send(helpers.generate_rude_response_missing_arg(
+                    victim, self.bot.config["ai"]["openai_api_key"]
+                ).strip().strip('"'))
 
 
 async def setup(bot):
@@ -66,7 +70,7 @@ def generate_dezgo_image(
     prompt: str, key: str, model: str = "epic_diffusion_1_1"
 ) -> io.BytesIO:
     url = "https://dezgo.p.rapidapi.com/text2image"
-    payload = {
+    data = {
         "prompt": prompt,
         "guidance": 7,
         "steps": 30,
@@ -81,6 +85,6 @@ def generate_dezgo_image(
         "X-RapidAPI-Key": key,
         "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
     }
-    r = requests.post(url, data=payload, headers=headers)
+    r = requests.post(url, data=data, headers=headers)
 
     return io.BytesIO(r.content)
