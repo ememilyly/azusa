@@ -6,8 +6,17 @@ from configparser import ConfigParser
 import os
 import re
 import requests
+import io
 
 _log = logging.getLogger(__name__)
+
+
+def reload_cfg(path) -> ConfigParser:
+    global _config
+    _config = ConfigParser()
+    _config.read(path)
+
+    return _config
 
 
 def available_exts() -> list:
@@ -17,12 +26,6 @@ def available_exts() -> list:
             exts.append(ext[:-3])
 
     return exts
-
-
-def reload_cfg(path) -> ConfigParser:
-    config = ConfigParser()
-    config.read(path)
-    return config
 
 
 def replace_mentions_with_names(ctx: commands.Context, args: str) -> str:
@@ -55,7 +58,6 @@ def get_object_from_mention(ctx: commands.Context, mention: str):
 
 def generate_openai_chat(
     prompt: str,
-    key: str,
     model: str = "gpt-3.5-turbo"
 ) -> str:
     url = "https://api.openai.com/v1/chat/completions"
@@ -68,7 +70,7 @@ def generate_openai_chat(
     }
     headers = {
         "content-type": "application/json",
-        "Authorization": f"Bearer {key}"
+        "Authorization": f"Bearer {_config['ai']['openai_api_key']}"
     }
     r = requests.post(url, json=data, headers=headers)
 
@@ -77,7 +79,29 @@ def generate_openai_chat(
     return r.json()["choices"][0]["message"]["content"]
 
 
-def generate_rude_response_missing_arg(victim: str, key: str) -> str:
-    prompt = f"you were asked to run a command by {victim} but not given all the arguments to do so"
+def generate_rude_response_missing_arg(ctx: commands.Context) -> str:
+    prompt = f"you were asked to run a command by {ctx.author.display_name} but not given all the arguments to do so"
 
-    return generate_openai_chat(prompt, key)
+    return generate_openai_chat(prompt)
+
+
+def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.BytesIO:
+    url = "https://dezgo.p.rapidapi.com/text2image"
+    data = {
+        "prompt": prompt,
+        "guidance": 7,
+        "steps": 30,
+        "sampler": "euler_a",
+        "upscale": 1,
+        # default given by dezgo /shrug linter fuming rn
+        "negative_prompt": "ugly, tiling, poorly drawn hands, poorly drawn feet, poorly drawn face, out of frame, extra limbs, disfigured, deformed, body out of frame, blurry, bad anatomy, blurred, watermark, grainy, signature, cut off, draft",
+        "model": model,
+    }
+    headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        "X-RapidAPI-Key": _config["ai"]["dezgo_api_key"],
+        "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
+    }
+    r = requests.post(url, data=data, headers=headers)
+
+    return io.BytesIO(r.content)
