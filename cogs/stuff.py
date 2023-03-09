@@ -11,6 +11,7 @@ class stuff(commands.Cog):
         self.bot = bot
         self.log = _log
 
+    @commands.is_owner()
     @commands.command(
         help="test command",
         hidden=True,
@@ -21,7 +22,7 @@ class stuff(commands.Cog):
         *,
         testarg: str = commands.parameter(default="uwu", description="test command"),
     ):
-        self.log.error(testarg)
+        pass
 
     @commands.command(
         aliases=("ud",),

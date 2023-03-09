@@ -3,7 +3,6 @@ import discord
 import logging
 from configparser import ConfigParser
 
-import os
 import re
 import requests
 import io
@@ -17,15 +16,6 @@ def reload_cfg(path) -> ConfigParser:
     _config.read(path)
 
     return _config
-
-
-def available_exts() -> list:
-    exts = []
-    for ext in os.listdir("cogs"):
-        if ext.endswith(".py"):
-            exts.append(ext[:-3])
-
-    return exts
 
 
 def replace_mentions_with_names(ctx: commands.Context, args: str) -> str:
