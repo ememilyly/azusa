@@ -42,7 +42,7 @@ class admin(commands.Cog):
             message +=  \
                 "\n\nUnloaded extensions:\n`" + "`, `".join(sorted(unloaded_exts)) + "`"
 
-        await ctx.send(message)
+        await ctx.reply(message)
 
     @commands.before_invoke(partial(
         invokers.multiple,
@@ -71,20 +71,20 @@ class admin(commands.Cog):
             _available_exts = helpers.available_exts()
             for ext in exts.split(' '):
                 if ext not in _available_exts:
-                    await ctx.send(f"Can't find `{ext}` :frowning:")
+                    await ctx.reply(f"Can't find `{ext}` :frowning:")
                 elif ext in self._loaded_extensions:
-                    await ctx.send(f"`{ext}` is already loaded.")
+                    await ctx.reply(f"`{ext}` is already loaded.")
                 else:
                     try:
                         await self.bot.load_extension(f"cogs.{ext}")
                     except Exception as e:
                         self.log.error(f"Failed to load {ext}:")
                         self.log.error(e)
-                        await ctx.send(f"Failed to load {ext} :sob:\n```{e}```")
+                        await ctx.reply(f"Failed to load {ext} :sob:\n```{e}```")
                     else:
-                        await ctx.send(f"Loaded `{ext}` :muscle:")
+                        await ctx.reply(f"Loaded `{ext}` :muscle:")
         else:
-            await ctx.send("Please specify which extensions to load.")
+            await ctx.reply("Please specify which extensions to load.")
 
     @commands.before_invoke(partial(
         invokers.multiple,
@@ -113,12 +113,12 @@ class admin(commands.Cog):
             _loaded_exts = self._loaded_extensions
             for ext in exts.split(' '):
                 if ext not in _loaded_exts:
-                    await ctx.send(f"Unknown extension `{ext}` :frowning:")
+                    await ctx.reply(f"Unknown extension `{ext}` :frowning:")
                 else:
                     await self.bot.unload_extension(f"cogs.{ext}")
-                    await ctx.send(f"Unloaded `{ext}` :wave:")
+                    await ctx.reply(f"Unloaded `{ext}` :wave:")
         else:
-            await ctx.send("Please specify which extensions to unload.")
+            await ctx.reply("Please specify which extensions to unload.")
 
     @commands.before_invoke(partial(
         invokers.multiple,
@@ -148,13 +148,13 @@ class admin(commands.Cog):
             exts = sorted(self._loaded_extensions)
             for ext in exts:
                 await self.bot.reload_extension(f"cogs.{ext}")
-            await ctx.send(
+            await ctx.reply(
                 f"{len(self.bot.extensions)} extensions reloaded: "
                 f'`{"`, `".join(exts)}`'
             )
             self.bot.config = helpers.reload_cfg("bot.cfg")
             self.bot.command_prefix = self.bot.config["bot"]["prefix"]
-            await ctx.send("Reloaded config :muscle:")
+            await ctx.reply("Reloaded config :muscle:")
 
         else:
             for ext in exts.split(' '):
@@ -168,12 +168,12 @@ class admin(commands.Cog):
                         )
                         self.bot.command_prefix = self.bot.config["bot"]["prefix"]
                         message += f" Use `{self.bot.command_prefix}cmd` now!"
-                    await ctx.send(message)
+                    await ctx.reply(message)
                 elif ext in self.bot.cogs.keys():
                     await self.bot.reload_extension(f"cogs.{ext.lower()}")
-                    await ctx.send(f"Reloaded `{ext}` :muscle:")
+                    await ctx.reply(f"Reloaded `{ext}` :muscle:")
                 else:
-                    await ctx.send(f"Unknown extension `{ext}` :frowning:")
+                    await ctx.reply(f"Unknown extension `{ext}` :frowning:")
 
     @commands.before_invoke(invokers.log_command)
     @commands.is_owner()
@@ -190,7 +190,7 @@ class admin(commands.Cog):
     async def ext_command_handler(self, ctx, e):
         if isinstance(e, commands.MissingRequiredArgument):
             if e.param.name == "exts":
-                await ctx.send("Am I supposed to know which extensions you want? :unamused:")
+                await ctx.reply("Am I supposed to know which extensions you want? :unamused:")
         elif isinstance(e, commands.UserInputError):
             await ctx.message.add_reaction("😡")
 

@@ -26,7 +26,7 @@ class ffxiv(commands.Cog):
         forecast = ffxivweather.forecaster.get_forecast(place_name=zone, count=5)
 
         for i in forecast:
-            await ctx.send(f'{i[1]}: {i[0]["name_en"]}')
+            await ctx.reply(f'{i[1]}: {i[0]["name_en"]}')
 
 
 async def setup(bot):

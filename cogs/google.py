@@ -39,9 +39,11 @@ class google(commands.Cog):
             else:
                 return
 
-            gis = GoogleImagesSearch(key, cx)
-            gis.search(search_params=search)
-            await ctx.send(gis.results()[0]._url)
+            async with ctx.typing():
+                gis = GoogleImagesSearch(key, cx)
+                gis.search(search_params=search)
+
+            await ctx.reply(gis.results()[0]._url)
 
 
 async def setup(bot):

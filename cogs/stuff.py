@@ -40,9 +40,9 @@ class stuff(commands.Cog):
             defs = client.get_definition(term)
             if defs:
                 m = defs[0].definition + "\n```" + defs[0].example + "```"
-                await ctx.send(m.replace("[", "").replace("]", ""))
+                await ctx.reply(m.replace("[", "").replace("]", ""))
             else:
-                await ctx.send(f"No definition found for {term}")
+                await ctx.reply(f"No definition found for {term}")
 
 
 async def setup(bot):
