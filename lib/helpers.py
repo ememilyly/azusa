@@ -64,10 +64,11 @@ def generate_openai_chat(
         "Authorization": f"Bearer {_config['ai']['openai_api_key']}"
     }
     r = requests.post(url, json=data, headers=headers)
-
     _log.debug(r.json())
 
-    return r.json()["choices"][0]["message"]["content"]
+    chat = r.json()["choices"][0]["message"]["content"]
+
+    return chat.strip().strip('"')
 
 
 def generate_rude_response_missing_arg(ctx: commands.Context) -> str:

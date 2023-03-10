@@ -29,4 +29,5 @@ class Azusa(commands.Bot):
             if cmd.aliases:
                 cmds += [alias for alias in cmd.aliases]
 
+        cmds.append("help")
         return cmds

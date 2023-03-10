@@ -15,16 +15,28 @@ class ai(commands.Cog):
     async def on_message(self, message):
         # don't reply to commands unless we want to
         if message.content.startswith(self.bot.command_prefix):
-            if message.content.split(' ')[0] not in self.bot.commands_and_aliases:
-                # await message.reply("dumbass")
-                pass
-        else:
-            if f"<@{self.bot.user.id}>" in message.content or (
-                message.type == discord.MessageType.reply
-                and message.reference.cached_message.author.id == self.bot.user.id
-            ):
+            cmd = message.content.split(" ")[0][1:]
+            if cmd not in self.bot.commands_and_aliases:
+                prompt = f"'{message.author.display_name}' tried to run a command `{self.bot.command_prefix}{cmd}` that you don't recognise. tell them you don't recognise it, and to use `{self.bot.command_prefix}help` if they need to."
                 async with message.channel.typing():
-                    await message.reply(helpers.generate_openai_chat(message.clean_content))
+                    await message.reply(helpers.generate_openai_chat(prompt))
+        else:
+            if (
+                f"<@{self.bot.user.id}>" in message.content
+                or message.type == discord.MessageType.reply
+            ):
+                # TODO: follow message reference even if not cached?
+                # this does work for an ok age check and snarky response tho
+                if message.reference.cached_message:
+                    if message.reference.cached_message.author.id == self.bot.user.id:
+                        async with message.channel.typing():
+                            await message.reply(
+                                helpers.generate_openai_chat(message.clean_content)
+                            )
+                else:
+                    prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
+                    async with message.channel.typing():
+                        await message.reply(helpers.generate_openai_chat(prompt))
 
     @commands.command(
         aliases=("t2i",),
@@ -38,13 +50,13 @@ class ai(commands.Cog):
                     image = helpers.generate_dezgo_image(prompt)
                 except Exception as e:
                     self.log.error(e)
-                    await ctx.reply('```' + str(e) + '```')
+                    await ctx.reply("```" + str(e) + "```")
                     return
                 await ctx.send(
                     file=discord.File(image, filename="image.png", spoiler=True)
                 )
         else:
-            prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and they didn't tell you"
+            prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and i didn't tell you"
 
             async with ctx.typing():
                 await ctx.reply(helpers.generate_openai_chat(prompt))
