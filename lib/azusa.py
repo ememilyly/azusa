@@ -7,18 +7,13 @@ _log = logging.getLogger(__name__)
 
 
 class Azusa(commands.Bot):
-    pass
 
     @property
-    def available_exts(self) -> list:
-        if not self.config:
-            path = "cogs"
-        else:
-            path = self.config["bot"]["ext_dir"]
+    def available_extensions(self) -> list:
         exts = []
-        for ext in os.listdir(path):
+        for ext in os.listdir(self.cogs_dir):
             if ext.endswith(".py"):
-                exts.append(ext[:-3])
+                exts.append(f"{self.cogs_dir}.{ext[:-3]}")
 
         return exts
 
@@ -29,5 +24,5 @@ class Azusa(commands.Bot):
             if cmd.aliases:
                 cmds += [alias for alias in cmd.aliases]
 
-        cmds.append("help")
+        cmds.insert(0, "help")
         return cmds

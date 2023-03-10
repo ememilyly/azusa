@@ -13,10 +13,11 @@ _log = logging.getLogger(__name__)
 
 async def main():
     async with bot:
-        for ext in bot.available_exts:
+        for ext in bot.available_extensions:
             try:
-                await bot.load_extension(f"cogs.{ext}")
+                await bot.load_extension(ext)
             except commands.ExtensionError:
+                raise
                 continue
 
         await bot.start(bot.config["bot"]["token"])
@@ -28,11 +29,12 @@ if __name__ == "__main__":
     else:
         raise OSError("bot.cfg not found")
 
-    # TODO: intents??
-    # https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Bot.intents
     bot = azusa.Azusa(config["bot"]["prefix"], intents=discord.Intents.all())
     bot.owner_id = int(config["bot"]["ownerid"])
+    bot.cogs_dir = "cogs"
 
+    # TODO: personality in config? this isn't really used yet as the prompt is
+    # taken in a helper so haven't figured out giving it access to that yet
     if config["ai"]["openai_error_messages"]:
         if config["ai"]["openai_api_key"] and config["ai"]["personality_prompt"]:
             bot.personality = config["ai"]["personality_prompt"]
