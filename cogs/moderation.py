@@ -29,7 +29,7 @@ class moderation(commands.Cog):
             limit = 10
             if limit > int(num):
                 limit = num
-            async for message in ctx.channel.history(limit=int(num) + 1):
+            async for message in ctx.history(limit=int(num) + 1):
                 await message.delete()
 
 
