@@ -24,7 +24,7 @@ class Azusa(commands.Bot):
 
     @property
     def commands_and_aliases(self) -> list:
-        cmds = list(self.commands)
+        cmds = [cmd.name for cmd in self.commands]
         for cmd in self.commands:
             if cmd.aliases:
                 cmds += [alias for alias in cmd.aliases]

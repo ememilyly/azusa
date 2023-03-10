@@ -76,6 +76,7 @@ class admin(commands.Cog):
                     await ctx.reply(f"`{ext}` is already loaded.")
                 else:
                     try:
+                        # TODO: change these references to pick up from config
                         await self.bot.load_extension(f"cogs.{ext}")
                     except Exception as e:
                         self.log.error(f"Failed to load {ext}:")

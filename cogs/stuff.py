@@ -1,4 +1,5 @@
 from discord.ext import commands
+from lib import helpers
 import logging
 
 from udpy import UrbanClient
@@ -22,7 +23,10 @@ class stuff(commands.Cog):
         *,
         testarg: str = commands.parameter(default="uwu", description="test command"),
     ):
-        pass
+        cmds = [cmd.name for cmd in self.bot.commands]
+        prompt = f"'{ctx.author.display_name}' asked for help with what you do. let them know all the commands you support and to use `,help command` for more specific information on each one. the list of commands you know is: `{'`, `'.join(cmds)}`"
+        async with ctx.typing():
+            await ctx.reply(helpers.generate_openai_chat(prompt))
 
     @commands.command(
         aliases=("ud",),
