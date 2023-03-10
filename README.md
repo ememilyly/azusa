@@ -11,3 +11,4 @@ writing this here cos i'll lose it and forget otherwise
 - podman?
 - docstrings
 - make into pip package
+- command line input
