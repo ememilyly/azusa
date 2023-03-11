@@ -29,7 +29,8 @@ class ai(commands.Cog):
                 # TODO: follow message reference even if not cached?
                 # this does work for an ok age check and snarky response tho
                 # prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
-                if message.reference.cached_message:
+                # message.mentions allows to turn off mentions and she won't reply
+                if message.reference.cached_message and message.mentions:
                     if message.reference.cached_message.author.id == self.bot.user.id:
                         async with message.channel.typing():
                             await message.reply(
