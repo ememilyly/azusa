@@ -22,10 +22,10 @@ class ai(commands.Cog):
                 async with message.channel.typing():
                     await message.reply(helpers.generate_openai_chat(prompt))
         else:
-            if (
-                f"<@{self.bot.user.id}>" in message.content
-                or message.type == discord.MessageType.reply
-            ):
+            if f"<@{self.bot.user.id}>" in message.content:
+                async with message.channel.typing():
+                    await message.reply(helpers.generate_openai_chat(message.clean_content))
+            elif message.type == discord.MessageType.reply:
                 # TODO: follow message reference even if not cached?
                 # this does work for an ok age check and snarky response tho
                 # prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
