@@ -3,10 +3,10 @@ import discord
 import logging
 from configparser import ConfigParser
 
-import re
-import requests
 import io
 import json
+import re
+import requests
 
 _log = logging.getLogger(__name__)
 

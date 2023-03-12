@@ -3,9 +3,6 @@ import discord
 from lib import helpers
 import logging
 
-import asyncio
-import math
-
 _log = logging.getLogger(__name__)
 
 
@@ -78,49 +75,8 @@ class ai(commands.Cog):
 
     @commands.command()
     async def t2imodels(self, ctx):
-        # https://stackoverflow.com/a/61786852
         models = helpers.get_dezgo_models()
-        per_page = 10
-        pages = math.ceil(len(models) / per_page)
-        cur_page = 1
-        chunk = models[:per_page]
-        linebreak = "\n"
-        message = await ctx.send(f"Page {cur_page}/{pages}:\n```{linebreak.join(chunk)}```")
-        await message.add_reaction("◀️")
-        await message.add_reaction("▶️")
-        active = True
-
-        def check(reaction, user):
-            return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
-            # or you can use unicodes, respectively: "\u25c0" or "\u25b6"
-
-        while active:
-            try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", timeout=60, check=check
-                )
-
-                if str(reaction.emoji) == "▶️" and cur_page != pages:
-                    cur_page += 1
-                    if cur_page != pages:
-                        chunk = models[(cur_page - 1) * per_page: cur_page * per_page]
-                    else:
-                        chunk = models[(cur_page - 1) * per_page:]
-                    await message.edit(
-                        content=f"Page {cur_page}/{pages}:\n```{linebreak.join(chunk)}```"
-                    )
-                    await message.remove_reaction(reaction, user)
-
-                elif str(reaction.emoji) == "◀️" and cur_page > 1:
-                    cur_page -= 1
-                    chunk = models[(cur_page - 1) * per_page: cur_page * per_page]
-                    await message.edit(
-                        content=f"Page {cur_page}/{pages}:\n{linebreak.join(chunk)}"
-                    )
-                    await message.remove_reaction(reaction, user)
-            except asyncio.TimeoutError:
-                await message.delete()
-                active = False
+        await ctx.paged_reply(self.bot, models)
 
 
 async def setup(bot):

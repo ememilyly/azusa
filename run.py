@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
-from lib import persephone, helpers
+from lib import persephone, helpers, methods
 import logging
 
 import asyncio
@@ -9,6 +9,10 @@ import os
 
 discord.utils.setup_logging(level=logging.INFO)
 _log = logging.getLogger(__name__)
+
+
+# add my methods
+commands.Context.paged_reply = methods.paged_reply
 
 
 async def main():
