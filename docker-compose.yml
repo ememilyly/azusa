@@ -1,0 +1,16 @@
+services:
+  persephone:
+    build:
+      context: .
+    image: persephone
+    container_name: persephone
+    volumes:
+      - ./src:/src
+      - ./tests:/tests
+    environment:
+      - BOT_TOKEN=/run/secrets/bot_token
+      - PERSONALITY=/run/secrets/persephone_personality
+      - OPENAI_API_KEY=/run/secrets/openai_api_key
+      - DEZGO_API_KEY=/run/secrets/dezgo_api_key
+      - GOOGLE_API_KEY=/run/secrets/google_api_key
+      - GOOGLE_ENGINE_ID=/run/secrets/google_engine_id
