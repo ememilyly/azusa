@@ -2,7 +2,7 @@ name: Update Persephone
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths-ignore:
       - '**/README.md'
       - 'bot.cfg.example'
