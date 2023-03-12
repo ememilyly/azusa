@@ -6,7 +6,7 @@ import os
 _log = logging.getLogger(__name__)
 
 
-class Azusa(commands.Bot):
+class Persephone(commands.Bot):
 
     @property
     def available_extensions(self) -> list:

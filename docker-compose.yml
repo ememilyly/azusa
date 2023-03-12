@@ -1,7 +1,7 @@
 services:
-    azusa:
-        container_name: azusa
+    persephone:
+        container_name: persephone
         build: .
         volumes:
-            - .:/azusa
+            - .:/persephone
         command: python3 run.py

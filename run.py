@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import discord
 from discord.ext import commands
-from lib import azusa, helpers
+from lib import persephone, helpers
 import logging
 
 import asyncio
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     else:
         raise OSError("bot.cfg not found")
 
-    bot = azusa.Azusa(config["bot"]["prefix"], intents=discord.Intents.all())
+    bot = persephone.Persephone(config["bot"]["prefix"], intents=discord.Intents.all())
     bot.owner_id = int(config["bot"]["ownerid"])
     bot.cogs_dir = "cogs"
 
