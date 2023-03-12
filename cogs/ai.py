@@ -3,6 +3,8 @@ import discord
 from lib import helpers
 import logging
 
+import requests
+
 _log = logging.getLogger(__name__)
 
 
@@ -60,10 +62,12 @@ class ai(commands.Cog):
             async with ctx.typing():
                 try:
                     image = helpers.generate_dezgo_image(prompt)
+                except requests.exceptions.ReadTimeout:
+                    await ctx.message.add_reaction("❌")
+                    await ctx.message.add_reaction("⏱")
                 except Exception as e:
-                    self.log.error(e)
-                    await ctx.reply("```" + str(e) + "```")
-                    return
+                    await ctx.message.add_reaction("❌")
+                    raise e
                 await ctx.reply(
                     file=discord.File(image, filename="image.png", spoiler=True)
                 )

@@ -97,7 +97,7 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
         "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
     }
     _log.debug(data)
-    r = requests.post(url, data=data, headers=headers, timeout=10)
+    r = requests.post(url, data=data, headers=headers, timeout=20)
 
     if r.status_code == 200:
         return io.BytesIO(r.content)
