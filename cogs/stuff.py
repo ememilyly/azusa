@@ -2,8 +2,6 @@ from discord.ext import commands
 from lib import helpers
 import logging
 
-from udpy import UrbanClient
-
 _log = logging.getLogger(__name__)
 
 
@@ -28,26 +26,26 @@ class stuff(commands.Cog):
         async with ctx.typing():
             await ctx.reply(helpers.generate_openai_chat(prompt))
 
-    @commands.command(
-        aliases=("ud",),
-        help="Look up something on Urban Dictionary"
-    )
+    @commands.command(aliases=("ud",), help="Look up something on Urban Dictionary")
     async def urbandict(
         self,
         ctx,
         *,
         term: str = commands.parameter(
-            description="What you want to look up"
-        )
+            default="random", description="What you want to look up"
+        ),
     ):
-        if term:
-            client = UrbanClient()
-            defs = client.get_definition(term)
-            if defs:
-                m = defs[0].definition + "\n```" + defs[0].example + "```"
-                await ctx.reply(m.replace("[", "").replace("]", ""))
-            else:
-                await ctx.reply(f"No definition found for {term}")
+        definitions = helpers.query_urban_dictionary(term)
+        if definitions:
+            msg = (
+                definitions[0]["definition"]
+                + "\n```"
+                + definitions[0]["example"]
+                + "```"
+            )
+            await ctx.reply(msg.replace("[", "").replace("]", ""))
+        else:
+            await ctx.reply(f"No definition found for {term}")
 
 
 async def setup(bot):

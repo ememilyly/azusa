@@ -98,3 +98,10 @@ def get_dezgo_models() -> list:
     models = [f"[{model['id']}] {model['description']}" for model in r.json()["models"]]
 
     return models
+
+
+def query_urban_dictionary(endpoint: str = "random") -> list:
+    url = "https://api.urbandictionary.com/v0/" + endpoint
+    r = requests.get(url)
+
+    return r.json()["list"]
