@@ -6,7 +6,7 @@ docker compose up --build -d --remove-orphans
 echo "Waiting to verify successful start..."
 sleep 5
 
-if docker compose ls | grep -q ^azusa; then
+if docker compose ls | grep -q ^persephone; then
     echo "persephone still running :)"
     docker compose logs
     exit 0

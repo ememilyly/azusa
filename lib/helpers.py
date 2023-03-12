@@ -97,14 +97,19 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
         "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
     }
     _log.debug(data)
-    r = requests.post(url, data=data, headers=headers)
+    r = requests.post(url, data=data, headers=headers, timeout=10)
 
-    # expect raw image, if json is error
-    try:
-        e = json.loads(r.text)
-        raise Exception(e)
-    except json.decoder.JSONDecodeError:
+    if r.status_code == 200:
         return io.BytesIO(r.content)
+    else:
+        try:
+            # json error if 4xx
+            e = json.loads(r.text)
+            raise Exception(e)
+        except json.decoder.JSONDecodeError:
+            # html error if 5xx
+            e = r.text
+            raise Exception(e)
 
 
 def get_dezgo_models() -> list:
