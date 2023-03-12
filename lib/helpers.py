@@ -1,5 +1,4 @@
 from discord.ext import commands
-import discord
 import logging
 from configparser import ConfigParser
 
@@ -7,6 +6,7 @@ import io
 import json
 import re
 import requests
+from typing import Union
 
 _log = logging.getLogger(__name__)
 
@@ -19,42 +19,17 @@ def reload_cfg(path) -> ConfigParser:
     return _config
 
 
-def replace_mentions_with_names(ctx: commands.Context, args: str) -> str:
-    text = []
-    for word in args.split(" "):
-        mention_regex = "^<(@|#)\\d*>$"
-        # e.g. <@111222333444555666>
-        if re.match(mention_regex, word):
-            obj = get_object_from_mention(ctx, word)
-            if isinstance(obj, discord.Member):
-                if obj.nick:
-                    word = obj.nick
-                else:
-                    word = obj.name
-            else:
-                word = obj.name
-        text.append(word)
-
-    return " ".join(text)
-
-
-def get_object_from_mention(ctx: commands.Context, mention: str):
-    mentioned_id = int(mention[2:][:-1])
-    if mention[1] == "@":
-        return ctx.guild.get_member(mentioned_id)
-    elif mention[1] == "#":
-        return ctx.guild.get_channel_or_thread(mentioned_id)
-        pass
-
-
-def generate_openai_chat(prompt: dict, model: str = "gpt-3.5-turbo") -> str:
+def generate_openai_chat(
+    prompt: Union[str, list], model: str = "gpt-3.5-turbo"
+) -> str:
+    if type(prompt) == str:
+        prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
     data = {
         "model": model,
         "messages": [
             {"role": "system", "content": _config["ai"]["personality_prompt"]},
-            {"role": "user", "content": prompt},
-        ],
+        ] + prompt,
     }
     headers = {
         "content-type": "application/json",

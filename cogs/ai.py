@@ -30,16 +30,28 @@ class ai(commands.Cog):
                         helpers.generate_openai_chat(message.clean_content)
                     )
             elif message.type == discord.MessageType.reply:
-                # TODO: follow message reference even if not cached?
-                # this does work for an ok age check and snarky response tho
                 # prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
                 # message.mentions allows to turn off mentions and she won't reply
                 if message.reference.cached_message and message.mentions:
                     if message.reference.cached_message.author.id == self.bot.user.id:
+                        prompt = [{"role": "user", "content": message.clean_content}]
+                        ref_msg = message.reference.cached_message
+                        # follow ref chain as far as we can go up for conversation
+                        while True:
+                            content = ref_msg.clean_content
+                            if ref_msg.author.id == self.bot.user.id:
+                                role = "assistant"
+                            else:
+                                role = "user"
+                            prompt.insert(0, {"role": role, "content": content})
+                            if ref_msg.type == discord.MessageType.reply:
+                                if ref_msg.reference.cached_message:
+                                    # go again
+                                    ref_msg = ref_msg.reference.cached_message
+                                    continue
+                            break
                         async with message.channel.typing():
-                            await message.reply(
-                                helpers.generate_openai_chat(message.clean_content)
-                            )
+                            await message.reply(helpers.generate_openai_chat(prompt))
 
     @commands.command(
         aliases=("t2i",),
