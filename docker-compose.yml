@@ -1,7 +1,0 @@
-services:
-    persephone:
-        container_name: persephone
-        build: .
-        volumes:
-            - .:/persephone
-        command: python3 run.py

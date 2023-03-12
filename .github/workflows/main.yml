@@ -25,4 +25,4 @@ jobs:
             git pull
             ./build.sh
 
-            docker image prune -a -f
+            podman system prune -a -f
