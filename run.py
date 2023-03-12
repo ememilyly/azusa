@@ -37,12 +37,6 @@ if __name__ == "__main__":
     bot.owner_id = int(config["bot"]["ownerid"])
     bot.cogs_dir = "cogs"
 
-    # TODO: personality in config? this isn't really used yet as the prompt is
-    # taken in a helper so haven't figured out giving it access to that yet
-    if config["ai"]["openai_error_messages"]:
-        if config["ai"]["openai_api_key"] and config["ai"]["personality_prompt"]:
-            bot.personality = config["ai"]["personality_prompt"]
-
     bot.config = config
 
     asyncio.run(main())

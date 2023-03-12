@@ -95,6 +95,6 @@ def get_dezgo_models() -> list:
     }
     r = requests.get(url, headers=headers)
 
-    models = [f"{model['id']}: {model['description']}" for model in r.json()["models"]]
+    models = [f"[{model['id']}] {model['description']}" for model in r.json()["models"]]
 
     return models
