@@ -47,21 +47,18 @@ def get_object_from_mention(ctx: commands.Context, mention: str):
         pass
 
 
-def generate_openai_chat(
-    prompt: str,
-    model: str = "gpt-3.5-turbo"
-) -> str:
+def generate_openai_chat(prompt: dict, model: str = "gpt-3.5-turbo") -> str:
     url = "https://api.openai.com/v1/chat/completions"
     data = {
         "model": model,
         "messages": [
             {"role": "system", "content": _config["ai"]["personality_prompt"]},
-            {"role": "user", "content": prompt}
-        ]
+            {"role": "user", "content": prompt},
+        ],
     }
     headers = {
         "content-type": "application/json",
-        "Authorization": f"Bearer {_config['ai']['openai_api_key']}"
+        "Authorization": f"Bearer {_config['ai']['openai_api_key']}",
     }
     r = requests.post(url, json=data, headers=headers)
     _log.debug(r.json())
@@ -78,6 +75,11 @@ def generate_rude_response_missing_arg(ctx: commands.Context) -> str:
 
 
 def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.BytesIO:
+    model_regex = "^\\[[a-zA-Z0-9_]+\\].*"
+    # if prompt starts [model] use that model
+    if re.match(model_regex, prompt):
+        model = prompt.split(" ")[0].strip("[").strip("]")
+        prompt = prompt.split(" ")[1:]
     url = "https://dezgo.p.rapidapi.com/text2image"
     data = {
         "prompt": prompt,
@@ -103,3 +105,16 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
         raise Exception(e)
     except json.decoder.JSONDecodeError:
         return io.BytesIO(r.content)
+
+
+def get_dezgo_models() -> list:
+    url = "https://dezgo.p.rapidapi.com/info"
+    headers = {
+        "X-RapidAPI-Key": _config["ai"]["dezgo_api_key"],
+        "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
+    }
+    r = requests.get(url, headers=headers)
+
+    models = [f"{model['id']}: {model['description']}" for model in r.json()["models"]]
+
+    return models

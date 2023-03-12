@@ -3,6 +3,9 @@ import discord
 from lib import helpers
 import logging
 
+import asyncio
+import math
+
 _log = logging.getLogger(__name__)
 
 
@@ -24,7 +27,9 @@ class ai(commands.Cog):
         else:
             if f"<@{self.bot.user.id}>" in message.content:
                 async with message.channel.typing():
-                    await message.reply(helpers.generate_openai_chat(message.clean_content))
+                    await message.reply(
+                        helpers.generate_openai_chat(message.clean_content)
+                    )
             elif message.type == discord.MessageType.reply:
                 # TODO: follow message reference even if not cached?
                 # this does work for an ok age check and snarky response tho
@@ -62,12 +67,8 @@ class ai(commands.Cog):
                     self.log.error(e)
                     await ctx.reply("```" + str(e) + "```")
                     return
-                await ctx.send(
-                    file=discord.File(
-                        image,
-                        filename="image.png",
-                        spoiler=True
-                    )
+                await ctx.reply(
+                    file=discord.File(image, filename="image.png", spoiler=True)
                 )
         else:
             prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and i didn't tell you"
@@ -76,12 +77,50 @@ class ai(commands.Cog):
                 await ctx.reply(helpers.generate_openai_chat(prompt))
 
     @commands.command()
-    async def chat(self, ctx, *args):
-        async with ctx.typing():
-            if args:
-                await ctx.send(helpers.generate_openai_chat(" ".join(args)))
-            else:
-                await ctx.send(helpers.generate_rude_response_missing_arg(ctx))
+    async def t2imodels(self, ctx):
+        # https://stackoverflow.com/a/61786852
+        models = helpers.get_dezgo_models()
+        per_page = 10
+        pages = math.ceil(len(models) / per_page)
+        cur_page = 1
+        chunk = models[:per_page]
+        linebreak = "\n"
+        message = await ctx.send(f"Page {cur_page}/{pages}:\n```{linebreak.join(chunk)}```")
+        await message.add_reaction("◀️")
+        await message.add_reaction("▶️")
+        active = True
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) in ["◀️", "▶️"]
+            # or you can use unicodes, respectively: "\u25c0" or "\u25b6"
+
+        while active:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=60, check=check
+                )
+
+                if str(reaction.emoji) == "▶️" and cur_page != pages:
+                    cur_page += 1
+                    if cur_page != pages:
+                        chunk = models[(cur_page - 1) * per_page: cur_page * per_page]
+                    else:
+                        chunk = models[(cur_page - 1) * per_page:]
+                    await message.edit(
+                        content=f"Page {cur_page}/{pages}:\n```{linebreak.join(chunk)}```"
+                    )
+                    await message.remove_reaction(reaction, user)
+
+                elif str(reaction.emoji) == "◀️" and cur_page > 1:
+                    cur_page -= 1
+                    chunk = models[(cur_page - 1) * per_page: cur_page * per_page]
+                    await message.edit(
+                        content=f"Page {cur_page}/{pages}:\n{linebreak.join(chunk)}"
+                    )
+                    await message.remove_reaction(reaction, user)
+            except asyncio.TimeoutError:
+                await message.delete()
+                active = False
 
 
 async def setup(bot):
