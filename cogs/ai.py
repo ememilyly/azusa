@@ -65,6 +65,7 @@ class ai(commands.Cog):
                 except requests.exceptions.ReadTimeout:
                     await ctx.message.add_reaction("❌")
                     await ctx.message.add_reaction("⏱")
+                    return
                 except Exception as e:
                     await ctx.message.add_reaction("❌")
                     raise e
