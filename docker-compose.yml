@@ -2,6 +2,8 @@ services:
   persephone:
     build:
       context: .
+      args:
+        - PREFIX=$PREFIX
     image: persephone
     container_name: persephone
     environment:

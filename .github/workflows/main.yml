@@ -22,5 +22,5 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_DIR }}
             git pull
-            make all
+            make all PREFIX=.
 

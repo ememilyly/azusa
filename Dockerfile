@@ -9,4 +9,6 @@ RUN pip install /src
 RUN mkdir /tests
 COPY tests/ /tests/
 
-CMD python3 bin/persephone ,
+ARG PREFIX
+ENV PREFIX=${PREFIX}
+CMD python3 bin/persephone ${PREFIX}
