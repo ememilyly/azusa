@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib import helpers, invokers
+from persephone import invokers
 import logging
 
 from functools import partial
@@ -13,19 +13,6 @@ class admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.log = _log
-
-    def reload_config(self) -> str:
-        self.log.info("loading config")
-        self.bot.config = helpers.reload_cfg("bot.cfg")
-        message = "Reloaded config :slight_smile:"
-        if self.bot.command_prefix != self.bot.config["bot"]["prefix"]:
-            self.log.info(
-                f"prefix changed to {self.bot.config['bot']['prefix']}"
-            )
-            self.bot.command_prefix = self.bot.config["bot"]["prefix"]
-            message += f" Use `{self.bot.command_prefix}cmd` now!"
-
-        return message
 
     @commands.before_invoke(invokers.log_command)
     @commands.is_owner()
@@ -97,6 +84,7 @@ class admin(commands.Cog):
         for ext in exts.split(" "):
             if not ext.startswith(self.bot.cogs_dir):
                 ext = f"{self.bot.cogs_dir}.{ext}"
+            self.log.error(ext)
             try:
                 await self.bot.unload_extension(ext)
             except commands.ExtensionNotLoaded:
@@ -122,7 +110,7 @@ class admin(commands.Cog):
     ):
         if not exts:
             # Reload everything
-            for ext in self.bot.extensions.keys():
+            for ext in list(self.bot.extensions.keys()):
                 try:
                     await self.bot.reload_extension(ext)
                 except Exception as e:
@@ -131,20 +119,16 @@ class admin(commands.Cog):
                 f"{len(self.bot.extensions)} extensions reloaded: "
                 f'`{"`, `".join(self.bot.extensions.keys())}`'
             )
-            await ctx.reply(self.reload_config())
 
         else:
             for ext in exts.split(" "):
-                if ext in ("cfg", "config"):
-                    await ctx.reply(self.reload_config())
-                else:
-                    if not ext.startswith(self.bot.cogs_dir):
-                        ext = f"{self.bot.cogs_dir}.{ext}"
-                    try:
-                        await self.bot.reload_extension(ext)
-                    except Exception as e:
-                        raise e
-                    await ctx.reply(f"Reloaded `{ext}` :muscle:")
+                if not ext.startswith(self.bot.cogs_dir):
+                    ext = f"{self.bot.cogs_dir}.{ext}"
+                try:
+                    await self.bot.reload_extension(ext)
+                except Exception as e:
+                    raise e
+                await ctx.reply(f"Reloaded `{ext}` :muscle:")
 
     @loadext.error
     @unloadext.error

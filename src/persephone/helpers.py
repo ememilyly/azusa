@@ -1,6 +1,6 @@
 from discord.ext import commands
 import logging
-from configparser import ConfigParser
+import persephone
 
 import io
 import json
@@ -9,14 +9,6 @@ import requests
 from typing import Union
 
 _log = logging.getLogger(__name__)
-
-
-def reload_cfg(path) -> ConfigParser:
-    global _config
-    _config = ConfigParser()
-    _config.read(path)
-
-    return _config
 
 
 def generate_openai_chat(
@@ -28,12 +20,12 @@ def generate_openai_chat(
     data = {
         "model": model,
         "messages": [
-            {"role": "system", "content": _config["ai"]["personality_prompt"]},
+            {"role": "system", "content": persephone.Secrets.get("PERSONALITY")},
         ] + prompt,
     }
     headers = {
         "content-type": "application/json",
-        "Authorization": f"Bearer {_config['ai']['openai_api_key']}",
+        "Authorization": f"Bearer {persephone.Secrets.get('OPENAI_API_KEY')}",
     }
     r = requests.post(url, json=data, headers=headers)
     _log.debug(r.json())
@@ -68,7 +60,7 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
     }
     headers = {
         "content-type": "application/x-www-form-urlencoded",
-        "X-RapidAPI-Key": _config["ai"]["dezgo_api_key"],
+        "X-RapidAPI-Key": persephone.Secrets.get("DEZGO_API_KEY"),
         "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
     }
     _log.debug(data)
@@ -90,7 +82,7 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
 def get_dezgo_models() -> list:
     url = "https://dezgo.p.rapidapi.com/info"
     headers = {
-        "X-RapidAPI-Key": _config["ai"]["dezgo_api_key"],
+        "X-RapidAPI-Key": persephone.Secrets.get("DEZGO_API_KEY"),
         "X-RapidAPI-Host": "dezgo.p.rapidapi.com",
     }
     r = requests.get(url, headers=headers)
@@ -101,6 +93,8 @@ def get_dezgo_models() -> list:
 
 
 def query_urban_dictionary(endpoint: str = "random") -> list:
+    if endpoint != "random":
+        endpoint = "define?term=" + endpoint
     url = "https://api.urbandictionary.com/v0/" + endpoint
     r = requests.get(url)
 

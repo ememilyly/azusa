@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib import helpers
+import persephone
 import logging
 
 _log = logging.getLogger(__name__)
@@ -21,10 +21,7 @@ class stuff(commands.Cog):
         *,
         testarg: str = commands.parameter(default="uwu", description="test command"),
     ):
-        cmds = [cmd.name for cmd in self.bot.commands]
-        prompt = f"'{ctx.author.display_name}' asked for help with what you do. let them know all the commands you support and to use `,help command` for more specific information on each one. the list of commands you know is: `{'`, `'.join(cmds)}`"
-        async with ctx.typing():
-            await ctx.reply(helpers.generate_openai_chat(prompt))
+        persephone.Secrets.set({'test': 'asdf'})
 
     @commands.command(aliases=("ud",), help="Look up something on Urban Dictionary")
     async def urbandict(
@@ -35,10 +32,12 @@ class stuff(commands.Cog):
             default="random", description="What you want to look up"
         ),
     ):
-        definitions = helpers.query_urban_dictionary(term)
+        definitions = persephone.helpers.query_urban_dictionary(term)
         if definitions:
             msg = (
-                definitions[0]["definition"]
+                definitions[0]["word"]
+                + "\n"
+                + definitions[0]["definition"]
                 + "\n```"
                 + definitions[0]["example"]
                 + "```"

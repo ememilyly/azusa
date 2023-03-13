@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib import invokers
+from persephone import invokers
 import logging
 
 _log = logging.getLogger(__name__)
