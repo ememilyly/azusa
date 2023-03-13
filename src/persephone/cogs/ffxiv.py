@@ -12,10 +12,7 @@ class ffxiv(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.command(
-        help="cassie time??",
-        hidden=True
-    )
+    @commands.command(help="cassie time??", hidden=True)
     async def cassie(self, ctx):
         # time = datetime.datetime.now().timestamp()
         # time = (datetime.datetime.now() + datetime.timedelta(minutes=30)).timestamp()

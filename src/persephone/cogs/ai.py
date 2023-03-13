@@ -1,7 +1,7 @@
-from discord.ext import commands
 import discord
-import persephone
+from discord.ext import commands
 import logging
+import persephone
 
 import requests
 
@@ -51,7 +51,9 @@ class ai(commands.Cog):
                                     continue
                             break
                         async with message.channel.typing():
-                            await message.reply(persephone.helpers.generate_openai_chat(prompt))
+                            await message.reply(
+                                persephone.helpers.generate_openai_chat(prompt)
+                            )
 
     @commands.command(
         aliases=("t2i",),

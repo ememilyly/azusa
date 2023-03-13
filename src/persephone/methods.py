@@ -12,7 +12,7 @@ async def paged_reply(self, bot, content):
     cur_page = 1
     chunk = content[:per_page]
     page_content = "Page `%s/%s`:\n```ini\n%s```"
-    message = await self.send(page_content % (cur_page, pages, '\n'.join(chunk)))
+    message = await self.send(page_content % (cur_page, pages, "\n".join(chunk)))
     # terminal doesn't like these and cba to fix fonts and stuff
     await message.add_reaction("\u25c0")  # ◀️
     await message.add_reaction("\u25b6")  # ▶️
@@ -33,11 +33,11 @@ async def paged_reply(self, bot, content):
                 else:
                     cur_page += 1
                 if cur_page != pages:
-                    chunk = content[(cur_page - 1) * per_page: cur_page * per_page]
+                    chunk = content[(cur_page - 1) * per_page:cur_page * per_page]
                 else:
                     chunk = content[(cur_page - 1) * per_page:]
                 await message.edit(
-                    content=page_content % (cur_page, pages, '\n'.join(chunk))
+                    content=page_content % (cur_page, pages, "\n".join(chunk))
                 )
                 await message.remove_reaction(reaction, user)
 
@@ -46,9 +46,9 @@ async def paged_reply(self, bot, content):
                     cur_page = pages
                 else:
                     cur_page -= 1
-                chunk = content[(cur_page - 1) * per_page: cur_page * per_page]
+                chunk = content[(cur_page - 1) * per_page:cur_page * per_page]
                 await message.edit(
-                    content=page_content % (cur_page, pages, '\n'.join(chunk))
+                    content=page_content % (cur_page, pages, "\n".join(chunk))
                 )
                 await message.remove_reaction(reaction, user)
         except asyncio.TimeoutError:

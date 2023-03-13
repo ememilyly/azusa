@@ -1,6 +1,6 @@
 from discord.ext import commands
-import persephone
 import logging
+import persephone
 
 _log = logging.getLogger(__name__)
 

@@ -1,21 +1,13 @@
-'''persephone.secrets
-
-check for secrets in priority order:
-    self._runtime_secrets   - allows for runtime setting of secrets for testing
-    container               - /run/secrets
-    env                     - environment
-    <file>                  - config file from -s
-'''
-
-import os
 import logging
+
 from configparser import ConfigParser
+import os
 from typing import Union
 
 _log = logging.getLogger(__name__)
 
 
-class Secrets():
+class Secrets:
     log = _log
     _runtime_secrets = {}
     secrets_file = None

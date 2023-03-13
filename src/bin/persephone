@@ -7,14 +7,14 @@ import persephone
 
 import asyncio
 
-EPILOG = '''Persephone will check secrets in order of:
+EPILOG = """Persephone will check secrets in order of:
 /run/secrets > env variables > secrets file (if specified)
-'''
+"""
 
 parser = argparse.ArgumentParser(
     description="Persephone - an overly artificial intelligent discord bot",
     formatter_class=argparse.RawTextHelpFormatter,
-    epilog=EPILOG
+    epilog=EPILOG,
 )
 parser.add_argument(
     dest="prefix",
@@ -23,7 +23,7 @@ parser.add_argument(
 parser.add_argument(
     "-v",
     dest="verbose",
-    action='store_true',
+    action="store_true",
     help="Run logging in DEBUG",
 )
 parser.add_argument(

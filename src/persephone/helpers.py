@@ -11,9 +11,7 @@ from typing import Union
 _log = logging.getLogger(__name__)
 
 
-def generate_openai_chat(
-    prompt: Union[str, list], model: str = "gpt-3.5-turbo"
-) -> str:
+def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo") -> str:
     if type(prompt) == str:
         prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
@@ -21,7 +19,8 @@ def generate_openai_chat(
         "model": model,
         "messages": [
             {"role": "system", "content": persephone.Secrets.get("PERSONALITY")},
-        ] + prompt,
+        ]
+        + prompt,
     }
     headers = {
         "content-type": "application/json",

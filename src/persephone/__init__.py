@@ -3,6 +3,7 @@ import logging
 import os
 
 from .helpers import *
+from .invokers import *
 from .methods import *
 from .secrets import Secrets
 
@@ -18,7 +19,7 @@ class Persephone(commands.Bot):
 
     @property
     def cogs_dir(self) -> str:
-        return __name__ + '.cogs'
+        return __name__ + ".cogs"
 
     @property
     def available_extensions(self) -> list:

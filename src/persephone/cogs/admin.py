@@ -1,6 +1,6 @@
 from discord.ext import commands
-from persephone import invokers
 import logging
+import persephone
 
 from functools import partial
 
@@ -14,7 +14,7 @@ class admin(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.before_invoke(invokers.log_command)
+    @commands.before_invoke(persephone.invokers.log_command)
     @commands.is_owner()
     @commands.command(aliases=("exts",), hidden=True)
     async def listexts(self, ctx):
@@ -32,7 +32,7 @@ class admin(commands.Cog):
 
         await ctx.reply(message)
 
-    @commands.before_invoke(invokers.log_command)
+    @commands.before_invoke(persephone.invokers.log_command)
     @commands.is_owner()
     @commands.command(aliases=("cogs",), hidden=True)
     async def listcogs(self, ctx):
@@ -40,7 +40,10 @@ class admin(commands.Cog):
         await ctx.reply(message)
 
     @commands.before_invoke(
-        partial(invokers.multiple, [invokers.log_command, invokers.check_alnum])
+        partial(
+            persephone.invokers.multiple,
+            [persephone.invokers.log_command, persephone.invokers.check_alnum],
+        )
     )
     @commands.is_owner()
     @commands.command(
@@ -67,7 +70,10 @@ class admin(commands.Cog):
                 await ctx.reply(f"Loaded `{ext}` :muscle:")
 
     @commands.before_invoke(
-        partial(invokers.multiple, [invokers.log_command, invokers.check_alnum])
+        partial(
+            persephone.invokers.multiple,
+            [persephone.invokers.log_command, persephone.invokers.check_alnum],
+        )
     )
     @commands.is_owner()
     @commands.command(
@@ -95,7 +101,10 @@ class admin(commands.Cog):
                 await ctx.reply(f"Unloaded `{ext}` :wave:")
 
     @commands.before_invoke(
-        partial(invokers.multiple, [invokers.log_command, invokers.check_alnum])
+        partial(
+            persephone.invokers.multiple,
+            [persephone.invokers.log_command, persephone.invokers.check_alnum],
+        )
     )
     @commands.is_owner()
     @commands.command(hidden=True)

@@ -2,7 +2,6 @@ from discord.ext import commands
 import logging
 import persephone
 
-import os
 from google_images_search import GoogleImagesSearch
 
 _log = logging.getLogger(__name__)
@@ -13,17 +12,12 @@ class google(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.command(
-        aliases=("img",),
-        help="Find the first image on google"
-    )
+    @commands.command(aliases=("img",), help="Find the first image on google")
     async def image(
         self,
         ctx,
         *,
-        term: str = commands.parameter(
-            description="What you want to look up"
-        )
+        term: str = commands.parameter(description="What you want to look up"),
     ):
         if term:
             key = persephone.Secrets.get("GOOGLE_API_KEY")
@@ -43,7 +37,9 @@ class google(commands.Cog):
 
 async def setup(bot):
     _log.info(f"loading {__name__}")
-    if persephone.Secrets.get("GOOGLE_API_KEY") and persephone.Secrets.get("GOOGLE_ENGINE_ID"):
+    if persephone.Secrets.get("GOOGLE_API_KEY") and persephone.Secrets.get(
+        "GOOGLE_ENGINE_ID"
+    ):
         await bot.add_cog(google(bot))
     else:
         e = "no google api config found, not loading"

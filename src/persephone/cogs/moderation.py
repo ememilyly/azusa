@@ -1,6 +1,6 @@
 from discord.ext import commands
-from persephone import invokers
 import logging
+import persephone
 
 _log = logging.getLogger(__name__)
 
@@ -10,21 +10,16 @@ class moderation(commands.Cog):
         self.bot = bot
         self.log = _log
 
-    @commands.before_invoke(invokers.log_command)
+    @commands.before_invoke(persephone.invokers.log_command)
     @commands.command(
         help="Prune previous chat messages in the current channel",
     )
     async def prune(
         self,
         ctx,
-        num: str = commands.parameter(
-            description="Number of messages to prune"
-        ),
+        num: str = commands.parameter(description="Number of messages to prune"),
     ):
-        if (
-            ctx.channel.permissions_for(ctx.author).manage_messages
-            and num.isdigit()
-        ):
+        if ctx.channel.permissions_for(ctx.author).manage_messages and num.isdigit():
             # smol limit because discord rate limits
             limit = 10
             if limit > int(num):
