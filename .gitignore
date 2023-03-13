@@ -1,7 +1,7 @@
+venv
+*egg-info
+env
+
+bot.cfg
 *.pyc
 *.swp
-bot.cfg
-.vscode
-venv
-todo
-cogs/test.py

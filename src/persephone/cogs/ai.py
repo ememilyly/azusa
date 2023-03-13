@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from lib import helpers
+import persephone
 import logging
 
 import requests
@@ -22,12 +22,12 @@ class ai(commands.Cog):
             if cmd not in self.bot.commands_and_aliases:
                 prompt = f"'{message.author.display_name}' tried to run a command `{self.bot.command_prefix}{cmd}` that you don't recognise. tell them you don't recognise it, and to use `{self.bot.command_prefix}help` if they need to."
                 async with message.channel.typing():
-                    await message.reply(helpers.generate_openai_chat(prompt))
+                    await message.reply(persephone.helpers.generate_openai_chat(prompt))
         else:
             if f"<@{self.bot.user.id}>" in message.content:
                 async with message.channel.typing():
                     await message.reply(
-                        helpers.generate_openai_chat(message.clean_content)
+                        persephone.helpers.generate_openai_chat(message.clean_content)
                     )
             elif message.type == discord.MessageType.reply:
                 # prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
@@ -51,7 +51,7 @@ class ai(commands.Cog):
                                     continue
                             break
                         async with message.channel.typing():
-                            await message.reply(helpers.generate_openai_chat(prompt))
+                            await message.reply(persephone.helpers.generate_openai_chat(prompt))
 
     @commands.command(
         aliases=("t2i",),
@@ -66,14 +66,14 @@ class ai(commands.Cog):
                 else:
                     prompt = f"'{ctx.author.display_name}' asked you to generate an image using the last prompt but you don't remember what that prompt was"
                     async with ctx.typing():
-                        await ctx.reply(helpers.generate_openai_chat(prompt))
+                        await ctx.reply(persephone.helpers.generate_openai_chat(prompt))
                         return
 
             self.log.info(f"generating image prompt: {prompt}")
             self.t2i_history[ctx.channel] = prompt
             async with ctx.typing():
                 try:
-                    image = helpers.generate_dezgo_image(prompt)
+                    image = persephone.helpers.generate_dezgo_image(prompt)
                 except requests.exceptions.ReadTimeout:
                     await ctx.message.add_reaction("❌")
                     await ctx.message.add_reaction("⏱")
@@ -88,18 +88,18 @@ class ai(commands.Cog):
             prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and i didn't tell you"
 
             async with ctx.typing():
-                await ctx.reply(helpers.generate_openai_chat(prompt))
+                await ctx.reply(persephone.helpers.generate_openai_chat(prompt))
 
     @commands.command()
     async def t2imodels(self, ctx):
-        models = helpers.get_dezgo_models()
+        models = persephone.helpers.get_dezgo_models()
         await ctx.paged_reply(self.bot, models)
 
 
 async def setup(bot):
     _log.info(f"loading {__name__}")
     # TODO: move this to stop loading just the command?
-    if bot.config["ai"]["openai_api_key"]:
+    if persephone.Secrets.get("OPENAI_API_KEY"):
         await bot.add_cog(ai(bot))
     else:
         e = "no openai api key found, not loading"

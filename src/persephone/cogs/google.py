@@ -1,6 +1,8 @@
 from discord.ext import commands
 import logging
+import persephone
 
+import os
 from google_images_search import GoogleImagesSearch
 
 _log = logging.getLogger(__name__)
@@ -24,20 +26,13 @@ class google(commands.Cog):
         )
     ):
         if term:
+            key = persephone.Secrets.get("GOOGLE_API_KEY")
+            cx = persephone.Secrets.get("GOOGLE_ENGINE_ID")
             search = {
                 "q": term,
                 "num": 1,
                 "safe": "off",
             }
-
-            if (
-                self.bot.config["google"]["api_key"]
-                and self.bot.config["google"]["engine_id"]
-            ):
-                key = self.bot.config["google"]["api_key"]
-                cx = self.bot.config["google"]["engine_id"]
-            else:
-                return
 
             async with ctx.typing():
                 gis = GoogleImagesSearch(key, cx)
@@ -48,7 +43,7 @@ class google(commands.Cog):
 
 async def setup(bot):
     _log.info(f"loading {__name__}")
-    if bot.config["google"]["api_key"] and bot.config["google"]["engine_id"]:
+    if persephone.Secrets.get("GOOGLE_API_KEY") and persephone.Secrets.get("GOOGLE_ENGINE_ID"):
         await bot.add_cog(google(bot))
     else:
         e = "no google api config found, not loading"

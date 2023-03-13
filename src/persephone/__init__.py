@@ -1,19 +1,31 @@
 from discord.ext import commands
 import logging
-
 import os
+
+from .helpers import *
+from .methods import *
+from .secrets import Secrets
+
 
 _log = logging.getLogger(__name__)
 
 
 class Persephone(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    log = _log
+
+    @property
+    def cogs_dir(self) -> str:
+        return __name__ + '.cogs'
 
     @property
     def available_extensions(self) -> list:
         exts = []
-        for ext in os.listdir(self.cogs_dir):
+        for ext in os.listdir(os.path.dirname(__file__) + "/cogs"):
             if ext.endswith(".py"):
-                exts.append(f"{self.cogs_dir}.{ext[:-3]}")
+                exts.append(f"persephone.cogs.{ext[:-3]}")
 
         return exts
 
