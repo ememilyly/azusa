@@ -21,7 +21,7 @@ class stuff(commands.Cog):
         *,
         testarg: str = commands.parameter(default="uwu", description="test command"),
     ):
-        persephone.Secrets.set({'test': 'asdf'})
+        pass
 
     @commands.command(aliases=("ud",), help="Look up something on Urban Dictionary")
     async def urbandict(
