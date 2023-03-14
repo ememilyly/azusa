@@ -70,6 +70,11 @@ class ai(commands.Cog):
                     async with ctx.typing():
                         await ctx.reply(persephone.helpers.generate_openai_chat(prompt))
                         return
+            elif prompt == "^":
+                # Use replied to message
+                if ctx.message.type == discord.MessageType.reply:
+                    if ctx.message.reference.cached_message:
+                        prompt = ctx.message.reference.cached_message.clean_content
 
             self.log.info(f"generating image prompt: {prompt}")
             self.t2i_history[ctx.channel] = prompt
