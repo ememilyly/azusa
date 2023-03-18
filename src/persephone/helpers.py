@@ -15,6 +15,7 @@ def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo")
     if type(prompt) == str:
         prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
+    _log.debug(prompt)
     data = {
         "model": model,
         "messages": [

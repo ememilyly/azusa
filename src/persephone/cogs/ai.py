@@ -24,13 +24,19 @@ class ai(commands.Cog):
                 async with message.channel.typing():
                     await message.reply(persephone.helpers.generate_openai_chat(prompt))
         else:
+            status = f"your current status is: '{self.bot.current_activity}'"
+            # reply to direct pings
             if f"<@{self.bot.user.id}>" in message.content:
+                prompt = [
+                    {"role": "system", "content": status},
+                    {"role": "user", "content": message.clean_content}
+                ]
                 async with message.channel.typing():
                     await message.reply(
-                        persephone.helpers.generate_openai_chat(message.clean_content)
+                        persephone.helpers.generate_openai_chat(prompt)
                     )
+            # reply to replies
             elif message.type == discord.MessageType.reply:
-                # prompt = f"'{message.author.display_name}' replied to you but the message they replied to was from so long ago you forgot what it was"
                 # message.mentions allows to turn off mentions and she won't reply
                 if message.reference.cached_message and message.mentions:
                     if message.reference.cached_message.author.id == self.bot.user.id:
@@ -43,6 +49,7 @@ class ai(commands.Cog):
                                 role = "assistant"
                             else:
                                 role = "user"
+                            # insert older messages to the top
                             prompt.insert(0, {"role": role, "content": content})
                             if ref_msg.type == discord.MessageType.reply:
                                 if ref_msg.reference.cached_message:
@@ -50,6 +57,7 @@ class ai(commands.Cog):
                                     ref_msg = ref_msg.reference.cached_message
                                     continue
                             break
+                        prompt.insert(0, {"role": "system", "content": status})
                         async with message.channel.typing():
                             await message.reply(
                                 persephone.helpers.generate_openai_chat(prompt)

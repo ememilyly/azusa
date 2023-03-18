@@ -168,10 +168,14 @@ class admin(commands.Cog):
         activity_text = persephone.helpers.generate_openai_chat(prompt)
         # Change response like '@persephone-dev Listening to whatever i like'
         # to just 'whatever i like' as openai can add some fluff
-        regex = '(?i)(?:listening to|playing|watching)\\s+(.*)'
+        regex = "(?i)(?:listening to|playing|watching)\\s+(.*)"
         activity_text = re.search(regex, activity_text)[1]
         self.log.info(f"New status: {activity} {activity_text}")
-        await self.bot.change_presence(activity=discord.Activity(type=activities[activity], name=activity_text), status=self.bot.status)
+        self.bot.current_activity = f"{activity} {activity_text}"
+        await self.bot.change_presence(
+            activity=discord.Activity(type=activities[activity], name=activity_text),
+            status=self.bot.status,
+        )
 
     @loadext.error
     @unloadext.error

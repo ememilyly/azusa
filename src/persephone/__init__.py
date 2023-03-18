@@ -16,6 +16,7 @@ class Persephone(commands.Bot):
         super().__init__(*args, **kwargs)
 
     log = _log
+    current_activity = None
 
     @property
     def cogs_dir(self) -> str:
