@@ -1,8 +1,11 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
+import discord
 import logging
 import persephone
 
 from functools import partial
+import random
+import re
 
 _log = logging.getLogger(__name__)
 
@@ -13,6 +16,18 @@ class admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.log = _log
+        self.change_status.start()
+
+    def cog_unload(self):
+        self.change_status.cancel()
+
+    @tasks.loop(minutes=30.0)
+    async def change_status(self):
+        await self.status(None)
+
+    @change_status.before_loop
+    async def before_change_status(self):
+        await self.bot.wait_until_ready()
 
     @commands.before_invoke(persephone.invokers.log_command)
     @commands.is_owner()
@@ -138,6 +153,25 @@ class admin(commands.Cog):
                 except Exception as e:
                     raise e
                 await ctx.reply(f"Reloaded `{ext}` :muscle:")
+
+    @commands.before_invoke(persephone.invokers.log_command)
+    @commands.is_owner()
+    @commands.command(hidden=True)
+    async def status(self, ctx):
+        activities = {
+            "playing": discord.ActivityType.playing,
+            "listening to": discord.ActivityType.listening,
+            "watching": discord.ActivityType.watching,
+        }
+        activity = random.choice([i for i in activities.keys()])
+        prompt = f"generate a short one sentence status for what you are doing starting with the word {activity}"
+        activity_text = persephone.helpers.generate_openai_chat(prompt)
+        # Change response like '@persephone-dev Listening to whatever i like'
+        # to just 'whatever i like' as openai can add some fluff
+        regex = '(?i)(?:listening to|playing|watching)\\s+(.*)'
+        activity_text = re.search(regex, activity_text)[1]
+        self.log.info(f"New status: {activity} {activity_text}")
+        await self.bot.change_presence(activity=discord.Activity(type=activities[activity], name=activity_text), status=self.bot.status)
 
     @loadext.error
     @unloadext.error
