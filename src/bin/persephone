@@ -27,9 +27,16 @@ parser.add_argument(
     help="Run logging in DEBUG",
 )
 parser.add_argument(
-    "-s",
+    "-c",
     dest="secrets_file",
     help="Specify a config file for secrets",
+)
+parser.add_argument(
+    "-s",
+    dest="status",
+    help="Bot's online status",
+    choices=["online", "offline", "idle", "dnd"],
+    default="idle",
 )
 args = parser.parse_args()
 
@@ -61,7 +68,11 @@ async def main():
 
 
 if __name__ == "__main__":
-    bot = persephone.Persephone(args.prefix, intents=discord.Intents.all())
+    bot = persephone.Persephone(
+        args.prefix,
+        intents=discord.Intents.all(),
+        status=args.status
+    )
     bot.owner_id = int(persephone.Secrets.get("OWNER_ID"))
 
     asyncio.run(main())
