@@ -11,4 +11,4 @@ COPY tests/ /tests/
 
 ARG PREFIX
 ENV PREFIX=${PREFIX}
-CMD python3 bin/persephone ${PREFIX}
+CMD persephone ${PREFIX}

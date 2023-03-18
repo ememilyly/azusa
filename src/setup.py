@@ -5,7 +5,7 @@ setuptools.setup(
     version="1.0",
     packages=["persephone"],
     scripts=["bin/persephone"],
-    author="emily",
+    author="ememilyly",
     url="https://github.com/ememilyly/persephone",
     classifiers=[
         "Programming Language :: Python :: 3",
