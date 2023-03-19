@@ -27,7 +27,7 @@ def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo")
         "content-type": "application/json",
         "Authorization": f"Bearer {persephone.Secrets.get('OPENAI_API_KEY')}",
     }
-    r = requests.post(url, json=data, headers=headers)
+    r = requests.post(url, json=data, headers=headers, timeout=10)
     _log.debug(r.json())
 
     chat = r.json()["choices"][0]["message"]["content"]
