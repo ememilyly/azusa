@@ -32,7 +32,7 @@ def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo")
 
     chat = r.json()["choices"][0]["message"]["content"]
 
-    return chat.strip().strip('"')
+    return chat.strip()
 
 
 def generate_rude_response_missing_arg(ctx: commands.Context) -> str:
