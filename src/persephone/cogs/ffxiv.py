@@ -12,6 +12,7 @@ class ffxiv(commands.Cog):
         self.bot = bot
         self.log = _log
 
+    # TODO: will finish this one day
     @commands.command(help="cassie time??", hidden=True)
     async def cassie(self, ctx):
         # time = datetime.datetime.now().timestamp()

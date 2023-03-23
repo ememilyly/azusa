@@ -1,9 +1,9 @@
-# persephone
+# Persephone - an overly artificial intelligent discord bot
 
-another discord bot. don't use this there's at least one better it's just something for me to play with i'm lonely
+Small(?) discord bot made for personal use, heavily making use of shiny new AI chat completions and image generation.
 
-## todo
-writing this here cos i'll lose it and forget otherwise
+## TODO
+Writing this here so I can keep track of things better.
 - [slash commands?](https://gist.github.com/Rapptz/c4324f17a80c94776832430007ad40e6#slash-commands-and-context-menu-commands)
 - testing?
 - docstrings

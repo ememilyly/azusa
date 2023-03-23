@@ -13,7 +13,7 @@ async def paged_reply(self, bot, content):
     chunk = content[:per_page]
     page_content = "Page `%s/%s`:\n```ini\n%s```"
     message = await self.send(page_content % (cur_page, pages, "\n".join(chunk)))
-    # terminal doesn't like these and cba to fix fonts and stuff
+    # WSL terminal doesn't like these
     await message.add_reaction("\u25c0")  # ◀️
     await message.add_reaction("\u25b6")  # ▶️
 

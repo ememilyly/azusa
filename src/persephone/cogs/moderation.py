@@ -20,8 +20,7 @@ class moderation(commands.Cog):
         num: str = commands.parameter(description="Number of messages to prune"),
     ):
         if ctx.channel.permissions_for(ctx.author).manage_messages and num.isdigit():
-            # smol limit because discord rate limits
-            limit = 10
+            limit = 100
             if limit > int(num):
                 limit = num
             async for message in ctx.history(limit=int(num) + 1):

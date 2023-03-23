@@ -70,19 +70,28 @@ class admin(commands.Cog):
         *,
         exts: str = commands.parameter(description="Which extensions to load"),
     ):
-        for ext in exts.split(" "):
-            if not ext.startswith(self.bot.cogs_dir):
-                ext = f"{self.bot.cogs_dir}.{ext}"
-            try:
-                await self.bot.load_extension(ext)
-            except commands.ExtensionNotFound:
-                await ctx.reply("i dont have that loaded dumbass")
-            except commands.ExtensionAlreadyLoaded:
-                await ctx.reply("i already loaded that dumbass")
-            except Exception as e:
-                raise e
-            else:
-                await ctx.reply(f"Loaded `{ext}` :muscle:")
+        _loaded = []
+        _failed = []
+        async with ctx.typing():
+            for ext in exts.split(" "):
+                if not ext.startswith(self.bot.cogs_dir):
+                    ext = f"{self.bot.cogs_dir}.{ext}"
+                try:
+                    await self.bot.load_extension(ext)
+                except commands.ExtensionNotFound:
+                    _failed.append(f"{ext}?")
+                except commands.ExtensionAlreadyLoaded:
+                    _failed.append(f"{ext}!")
+                except Exception as e:
+                    self.log.error(f"Exception trying to load {ext}:")
+                    self.log.error(e)
+                    _failed.append(f"{ext}‽")
+                else:
+                    _loaded.append(ext)
+        msg = f"Loaded `{'`, `'.join(_loaded)}` :muscle:"
+        if _failed:
+            msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
+        await ctx.reply(msg)
 
     @commands.before_invoke(
         partial(
@@ -102,18 +111,25 @@ class admin(commands.Cog):
         *,
         exts: str = commands.parameter(description="Which extensions to unload"),
     ):
+        _unloaded = []
+        _failed = []
         for ext in exts.split(" "):
             if not ext.startswith(self.bot.cogs_dir):
                 ext = f"{self.bot.cogs_dir}.{ext}"
-            self.log.error(ext)
             try:
                 await self.bot.unload_extension(ext)
             except commands.ExtensionNotLoaded:
-                await ctx.reply("idk what ur talking about dumbass")
+                _failed.append(f"{ext}?")
             except Exception as e:
-                raise e
+                self.log.error(f"Exception trying to unload {ext}:")
+                self.log.error(e)
+                _failed.append(f"{ext}‽")
             else:
-                await ctx.reply(f"Unloaded `{ext}` :wave:")
+                _unloaded.append(ext)
+        msg = f"Unloaded `{'`, `'.join(_unloaded)}` :muscle:"
+        if _failed:
+            msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
+        await ctx.reply(msg)
 
     @commands.before_invoke(
         partial(
@@ -134,25 +150,25 @@ class admin(commands.Cog):
     ):
         if not exts:
             # Reload everything
-            for ext in list(self.bot.extensions.keys()):
-                try:
-                    await self.bot.reload_extension(ext)
-                except Exception as e:
-                    raise e
-            await ctx.reply(
-                f"{len(self.bot.extensions)} extensions reloaded: "
-                f'`{"`, `".join(self.bot.extensions.keys())}`'
-            )
+            exts = ' '.join(list(self.bot.extensions.keys()))
 
-        else:
-            for ext in exts.split(" "):
-                if not ext.startswith(self.bot.cogs_dir):
-                    ext = f"{self.bot.cogs_dir}.{ext}"
-                try:
-                    await self.bot.reload_extension(ext)
-                except Exception as e:
-                    raise e
-                await ctx.reply(f"Reloaded `{ext}` :muscle:")
+        _reloaded = []
+        _failed = []
+        for ext in exts.split(" "):
+            if not ext.startswith(self.bot.cogs_dir):
+                ext = f"{self.bot.cogs_dir}.{ext}"
+            try:
+                await self.bot.reload_extension(ext)
+            except Exception as e:
+                self.log.error(f"Exception trying to reload {ext}:")
+                self.log.error(e)
+                _failed.append(ext)
+            else:
+                _reloaded.append(ext)
+        msg = f"Reloaded `{'`, `'.join(_reloaded)}` :muscle:"
+        if _failed:
+            msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
+        await ctx.reply(msg)
 
     @commands.before_invoke(persephone.invokers.log_command)
     @commands.is_owner()
