@@ -88,10 +88,12 @@ class admin(commands.Cog):
                     _failed.append(f"{ext}‽")
                 else:
                     _loaded.append(ext)
-        msg = f"Loaded `{'`, `'.join(_loaded)}` :muscle:"
+        msg = ""
+        if _loaded:
+            msg += f"Loaded `{'`, `'.join(_loaded)}` :muscle:"
         if _failed:
             msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
-        await ctx.reply(msg)
+        await ctx.reply(msg.strip())
 
     @commands.before_invoke(
         partial(
@@ -126,10 +128,12 @@ class admin(commands.Cog):
                 _failed.append(f"{ext}‽")
             else:
                 _unloaded.append(ext)
-        msg = f"Unloaded `{'`, `'.join(_unloaded)}` :muscle:"
+        msg = ""
+        if _unloaded:
+            msg += f"Unloaded `{'`, `'.join(_unloaded)}` :muscle:"
         if _failed:
-            msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
-        await ctx.reply(msg)
+            msg += f"Failed `{'`, `'.join(_failed)}` :frowning:"
+        await ctx.reply(msg.strip())
 
     @commands.before_invoke(
         partial(
@@ -165,7 +169,9 @@ class admin(commands.Cog):
                 _failed.append(ext)
             else:
                 _reloaded.append(ext)
-        msg = f"Reloaded `{'`, `'.join(_reloaded)}` :muscle:"
+        msg = ""
+        if _reloaded:
+            msg += f"Reloaded `{'`, `'.join(_reloaded)}` :muscle:"
         if _failed:
             msg += f"\nFailed `{'`, `'.join(_failed)}` :frowning:"
         await ctx.reply(msg)
