@@ -1,5 +1,6 @@
 export PREFIX := ,
 all: down prune up logs
+	easdf
 
 build:
 	podman-compose build
