@@ -12,17 +12,19 @@ class gw2(commands.Cog):
         self.log = _log
 
     @commands.command(aliases=("fotm",), help="Check daily fractals")
-    async def fractals(self, ctx):
+    async def fractals(self, ctx, tomorrow: str = None):
+        endpoint = "daily/tomorrow" if tomorrow == "tomorrow" else "daily"
         async with ctx.typing():
             # get all dailies
-            dailies = request_gw2_api("achievements/daily")
+            dailies = request_gw2_api(f"achievements/{endpoint}")
             # get fractal names from daily ids
-            fractal_ids = ",".join(str(i["id"]) for i in dailies['fractals'])
+            fractal_ids = ",".join(str(i["id"]) for i in dailies["fractals"])
             fractal_achieves = request_gw2_api(
-                "achievements",
-                params={"ids": fractal_ids}
+                "achievements", params={"ids": fractal_ids}
             )
-            fractal_names = [i["name"].lstrip("Daily Tier 4 ") for i in fractal_achieves if "Tier 4" in i["name"]]
+            fractal_names = [
+                i["name"][13:] for i in fractal_achieves if "Tier 4" in i["name"]
+            ]
 
             await ctx.reply("\n".join(fractal_names))
 
@@ -36,5 +38,5 @@ def request_gw2_api(endpoint: str, params: dict = {}) -> list:
     url = f"https://api.guildwars2.com/v2/{endpoint}"
 
     r = requests.get(url, params=params, timeout=20)
-    _log.debug(r.json())
+    _log.warning(r.json())
     return r.json()
