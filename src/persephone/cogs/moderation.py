@@ -17,14 +17,19 @@ class moderation(commands.Cog):
     async def prune(
         self,
         ctx,
-        num: str = commands.parameter(description="Number of messages to prune"),
+        num: str = commands.parameter(
+            description="Number of messages to prune", default=None
+        ),
     ):
-        if ctx.channel.permissions_for(ctx.author).manage_messages and num.isdigit():
-            limit = 100
-            if limit > int(num):
-                limit = num
-            async for message in ctx.history(limit=int(num) + 1):
-                await message.delete()
+        if num:
+            if ctx.channel.permissions_for(ctx.author).manage_messages and num.isdigit():
+                limit = 100
+                if limit > int(num):
+                    limit = num
+                async for message in ctx.history(limit=int(num) + 1):
+                    await message.delete()
+        else:
+            await ctx.message.add_reaction('❓')
 
 
 async def setup(bot):
