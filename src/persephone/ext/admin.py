@@ -74,8 +74,8 @@ class admin(commands.Cog):
         _failed = []
         async with ctx.typing():
             for ext in exts.split(" "):
-                if not ext.startswith(self.bot.cogs_dir):
-                    ext = f"{self.bot.cogs_dir}.{ext}"
+                if not ext.startswith(self.bot.ext_dir):
+                    ext = f"{self.bot.ext_dir}.{ext}"
                 try:
                     await self.bot.load_extension(ext)
                 except commands.ExtensionNotFound:
@@ -116,8 +116,8 @@ class admin(commands.Cog):
         _unloaded = []
         _failed = []
         for ext in exts.split(" "):
-            if not ext.startswith(self.bot.cogs_dir):
-                ext = f"{self.bot.cogs_dir}.{ext}"
+            if not ext.startswith(self.bot.ext_dir):
+                ext = f"{self.bot.ext_dir}.{ext}"
             try:
                 await self.bot.unload_extension(ext)
             except commands.ExtensionNotLoaded:
@@ -159,8 +159,8 @@ class admin(commands.Cog):
         _reloaded = []
         _failed = []
         for ext in exts.split(" "):
-            if not ext.startswith(self.bot.cogs_dir):
-                ext = f"{self.bot.cogs_dir}.{ext}"
+            if not ext.startswith(self.bot.ext_dir):
+                ext = f"{self.bot.ext_dir}.{ext}"
             try:
                 await self.bot.reload_extension(ext)
             except Exception as e:

@@ -19,15 +19,15 @@ class Persephone(commands.Bot):
     current_activity = None
 
     @property
-    def cogs_dir(self) -> str:
-        return __name__ + ".cogs"
+    def ext_dir(self) -> str:
+        return __name__ + ".ext"
 
     @property
     def available_extensions(self) -> list:
         exts = []
-        for ext in os.listdir(os.path.dirname(__file__) + "/cogs"):
+        for ext in os.listdir(os.path.dirname(__file__) + "/ext"):
             if ext.endswith(".py"):
-                exts.append(f"persephone.cogs.{ext[:-3]}")
+                exts.append(f"persephone.ext.{ext[:-3]}")
 
         return exts
 
