@@ -36,7 +36,7 @@ class gw2(commands.Cog):
     @commands.command(aliases=("fotm",), help="Check daily fractals")
     async def fractals(self, ctx, tomorrow: str = None):
         endpoint = "daily/tomorrow" if tomorrow == "tomorrow" else "daily"
-        message = ["Daily tiered:"]
+        message = ["**Daily tiered:**"]
         async with ctx.typing():
             # get all dailies
             dailies = request_gw2_api(f"achievements/{endpoint}")
@@ -50,7 +50,7 @@ class gw2(commands.Cog):
                 i["name"][13:] for i in fractal_achieves if "Tier 4" in i["name"]
             ]
             # look up recs
-            message.append("\nDaily recs:")
+            message.append("\n**Daily recs:**")
             rec_scales = [
                 # "Daily Recommended Fractal-Scale XX" -> XX
                 int(i["name"].split()[-1]) for i in fractal_achieves if "Recommended" in i["name"]
