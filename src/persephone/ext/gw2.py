@@ -13,7 +13,7 @@ DAILY_RECS_TABLE = {
     2: {2: "Uncategorized", 37: "Siren's Reef", 53: "Underground Facility"},
     6: {6: "Cliffside", 28: "Volcanic", 61: "Aquatic Ruins"},
     10: {10: "Molten Boss", 32: "Swampland", 65: "Aetherblade"},
-    14: {14: "Aetherblade", 34: "Thaumanova Reactor", 53: "Sunqua Peak"},
+    14: {14: "Aetherblade", 34: "Thaumanova Reactor", 75: "Sunqua Peak"},
     19: {19: "Volcanic", 37: "Siren's Reef", 66: "Urban Battleground"},
     15: {15: "Thaumanova Reactor", 41: "Twilight Oasis", 60: "Solid Ocean"},
     24: {24: "Shattered Observatory", 35: "Solid Ocean", 75: "Sunqua Peak"},
