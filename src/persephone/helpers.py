@@ -4,6 +4,7 @@ import persephone
 
 import io
 import json
+import random
 import re
 import requests
 from typing import Union
@@ -15,6 +16,8 @@ def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo")
     if type(prompt) == str:
         prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
+    if random.random() <= 0.025:
+        prompt = "pretend you were asked something but you're just annoyed and busy and dont want to deal with them right now"
     _log.debug(prompt)
     data = {
         "model": model,

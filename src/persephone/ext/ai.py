@@ -32,9 +32,13 @@ class ai(commands.Cog):
                     {"role": "user", "content": message.clean_content}
                 ]
                 async with message.channel.typing():
-                    await message.reply(
-                        persephone.helpers.generate_openai_chat(prompt)
-                    )
+                    try:
+                        await message.reply(
+                            persephone.helpers.generate_openai_chat(prompt)
+                        )
+                    except requests.exceptions.ReadTimeout:
+                        # :exploding_head:
+                        await message.add_reaction("\U0001F92F")
             # reply to replies
             elif message.type == discord.MessageType.reply:
                 # message.mentions allows to turn off mentions and she won't reply
