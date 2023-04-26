@@ -12,7 +12,7 @@ from typing import Union
 _log = logging.getLogger(__name__)
 
 
-def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo") -> str:
+async def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo") -> str:
     if type(prompt) == str:
         prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
@@ -38,13 +38,13 @@ def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo")
     return chat.strip()
 
 
-def generate_rude_response_missing_arg(ctx: commands.Context) -> str:
+async def generate_rude_response_missing_arg(ctx: commands.Context) -> str:
     prompt = f"you were asked to run a command by {ctx.author.display_name} but not given all the arguments to do so"
 
-    return generate_openai_chat(prompt)
+    return await generate_openai_chat(prompt)
 
 
-def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.BytesIO:
+async def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.BytesIO:
     model_regex = "^\\[[a-zA-Z0-9_]+\\].*"
     # if prompt starts [model] use that model
     if re.match(model_regex, prompt):
@@ -82,7 +82,7 @@ def generate_dezgo_image(prompt: str, model: str = "epic_diffusion_1_1") -> io.B
             raise Exception(e)
 
 
-def get_dezgo_models() -> list:
+async def get_dezgo_models() -> list:
     url = "https://dezgo.p.rapidapi.com/info"
     headers = {
         "X-RapidAPI-Key": persephone.Secrets.get("DEZGO_API_KEY"),
@@ -95,7 +95,7 @@ def get_dezgo_models() -> list:
     return models
 
 
-def query_urban_dictionary(endpoint: str = "random") -> list:
+async def query_urban_dictionary(endpoint: str = "random") -> list:
     if endpoint != "random":
         endpoint = "define?term=" + endpoint
     url = "https://api.urbandictionary.com/v0/" + endpoint

@@ -22,23 +22,25 @@ class ai(commands.Cog):
             if cmd not in self.bot.commands_and_aliases:
                 prompt = f"'{message.author.display_name}' tried to run a command `{self.bot.command_prefix}{cmd}` that you don't recognise. tell them you don't recognise it, and to use `{self.bot.command_prefix}help` if they need to."
                 async with message.channel.typing():
-                    await message.reply(persephone.helpers.generate_openai_chat(prompt))
+                    await message.reply(
+                        await persephone.helpers.generate_openai_chat(prompt)
+                    )
         else:
             status = f"your current status is: '{self.bot.current_activity}'"
             # reply to direct pings
             if f"<@{self.bot.user.id}>" in message.content:
                 prompt = [
                     {"role": "system", "content": status},
-                    {"role": "user", "content": message.clean_content}
+                    {"role": "user", "content": message.clean_content},
                 ]
-                async with message.channel.typing():
-                    try:
+                try:
+                    async with message.channel.typing():
                         await message.reply(
-                            persephone.helpers.generate_openai_chat(prompt)
+                            await persephone.helpers.generate_openai_chat(prompt)
                         )
-                    except requests.exceptions.ReadTimeout:
-                        # :exploding_head:
-                        await message.add_reaction("\U0001F92F")
+                except requests.exceptions.ReadTimeout:
+                    # :exploding_head:
+                    await message.add_reaction("\U0001F92F")
             # reply to replies
             elif message.type == discord.MessageType.reply:
                 # message.mentions allows to turn off mentions and she won't reply
@@ -64,7 +66,7 @@ class ai(commands.Cog):
                         prompt.insert(0, {"role": "system", "content": status})
                         async with message.channel.typing():
                             await message.reply(
-                                persephone.helpers.generate_openai_chat(prompt)
+                                await persephone.helpers.generate_openai_chat(prompt)
                             )
 
     @commands.command(
@@ -80,7 +82,7 @@ class ai(commands.Cog):
                 else:
                     prompt = f"'{ctx.author.display_name}' asked you to generate an image using the last prompt but you don't remember what that prompt was"
                     async with ctx.typing():
-                        await ctx.reply(persephone.helpers.generate_openai_chat(prompt))
+                        await ctx.reply(await persephone.helpers.generate_openai_chat(prompt))
                         return
             elif prompt == "^":
                 # Use replied to message
@@ -92,7 +94,7 @@ class ai(commands.Cog):
             self.t2i_history[ctx.channel] = prompt
             async with ctx.typing():
                 try:
-                    image = persephone.helpers.generate_dezgo_image(prompt)
+                    image = await persephone.helpers.generate_dezgo_image(prompt)
                 except requests.exceptions.ReadTimeout:
                     await ctx.message.add_reaction("❌")
                     await ctx.message.add_reaction("⏱")
@@ -107,11 +109,12 @@ class ai(commands.Cog):
             prompt = f"i ({ctx.author.display_name}) asked you to generate an image but you need to know what the image would be of and i didn't tell you"
 
             async with ctx.typing():
-                await ctx.reply(persephone.helpers.generate_openai_chat(prompt))
+                await ctx.reply(await persephone.helpers.generate_openai_chat(prompt))
 
     @commands.command()
     async def t2imodels(self, ctx):
-        models = persephone.helpers.get_dezgo_models()
+        async with ctx.typing():
+            models = await persephone.helpers.get_dezgo_models()
         await ctx.paged_reply(self.bot, models)
 
 

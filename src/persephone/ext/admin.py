@@ -187,7 +187,7 @@ class admin(commands.Cog):
         }
         activity = random.choice([i for i in activities.keys()])
         prompt = f"generate a short one sentence status for what you are doing starting with the word {activity}"
-        activity_text = persephone.helpers.generate_openai_chat(prompt)
+        activity_text = await persephone.helpers.generate_openai_chat(prompt)
         # Change response like '@persephone-dev Listening to whatever i like'
         # to just 'whatever i like' as openai can add some fluff
         regex = "(?i)(?:listening to|playing|watching)\\s+(.*)"
