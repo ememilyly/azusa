@@ -12,7 +12,7 @@ from typing import Union
 _log = logging.getLogger(__name__)
 
 
-async def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-3.5-turbo") -> str:
+async def generate_openai_chat(prompt: Union[str, list], model: str = "gpt-4") -> str:
     if type(prompt) == str:
         prompt = [{"role": "user", "content": prompt}]
     url = "https://api.openai.com/v1/chat/completions"
