@@ -12,4 +12,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'discord.py==2.3.1',
+        'ffxivweather',
+        'Google-Images-Search',
+    ]
 )
